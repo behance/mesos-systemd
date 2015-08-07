@@ -7,9 +7,9 @@ After=docker.service
 [Service]
 User=core
 Restart=always
+ExecStartPre=/usr/bin/docker pull newrelic/nrsysmond
 ExecStartPre=-/usr/bin/docker stop newrelic
 ExecStartPre=-/usr/bin/docker rm -f newrelic
-ExecStartPre=/usr/bin/docker pull newrelic/nrsysmond
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill newrelic
 ExecStartPre=-/usr/bin/docker rm newrelic

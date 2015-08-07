@@ -5,9 +5,9 @@ After=docker.service
 [Service]
 User=core
 Restart=always
+ExecStartPre=/usr/bin/docker pull behance/docker-sumologic
 ExecStartPre=-/usr/bin/docker stop sumologic
 ExecStartPre=-/usr/bin/docker rm -f sumologic
-ExecStartPre=/usr/bin/docker pull behance/docker-sumologic
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill sumologic
 ExecStartPre=-/usr/bin/docker rm sumologic

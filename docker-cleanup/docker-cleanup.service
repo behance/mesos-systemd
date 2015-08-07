@@ -10,7 +10,7 @@ User=core
 Restart=on-failure
 RestartSec=20
 TimeoutStartSec=0
-ExecStart=/usr/bin/bash -c '/usr/bin/wget -O /home/core/docker-cleanup.sh https://raw.githubusercontent.com/behance/mesos-systemd/v0.0.1/v1/fleet_units/docker-cleanup.sh && /usr/bin/bash /home/core/docker-cleanup.sh'
+ExecStart=/usr/bin/bash -c '/usr/bin/wget -O /home/core/docker-cleanup.sh https://raw.githubusercontent.com/behance/mesos-systemd/v0.0.1/fleet_units/docker-cleanup/docker-cleanup.sh && /usr/bin/bash /home/core/docker-cleanup.sh'
 
 [X-Fleet]
 Global=true

@@ -12,9 +12,9 @@ User=core
 Restart=always
 RestartSec=20
 TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull ${CHRONOS_IMAGE}
 ExecStartPre=-/usr/bin/docker kill chronos
 ExecStartPre=-/usr/bin/docker rm chronos
-ExecStartPre=/usr/bin/docker pull ${CHRONOS_IMAGE}
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
     --name chronos \
     --net=host \
@@ -34,5 +34,6 @@ ExecStop=/usr/bin/docker stop chronos
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
+Conflicts=chronos@*.service
 MachineMetadata=role=control
+MachineOf=zookeeper-exhibitor@%i.service

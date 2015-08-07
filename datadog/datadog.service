@@ -9,9 +9,9 @@ After=docker.service
 [Service]
 User=core
 Restart=always
+ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent:latest
 ExecStartPre=-/usr/bin/docker stop dd-agent
 ExecStartPre=-/usr/bin/docker rm -f dd-agent
-ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent:latest
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill dd-agent
 ExecStartPre=-/usr/bin/docker rm dd-agent

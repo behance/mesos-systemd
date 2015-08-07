@@ -14,9 +14,9 @@ User=core
 Restart=always
 RestartSec=20
 TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull ${MARATHON_IMAGE}
 ExecStartPre=-/usr/bin/docker kill marathon
 ExecStartPre=-/usr/bin/docker rm marathon
-ExecStartPre=/usr/bin/docker pull ${MARATHON_IMAGE}
 ExecStart=/usr/bin/docker run \
     --name marathon \
     -e LIBPROCESS_PORT=9090 \
@@ -32,5 +32,6 @@ ExecStop=/usr/bin/docker stop marathon
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
+Conflicts=marathon@*.service
 MachineMetadata=role=control
+MachineOf=zookeeper-exhibitor@%i.service

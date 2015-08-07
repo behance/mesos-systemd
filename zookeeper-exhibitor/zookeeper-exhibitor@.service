@@ -10,9 +10,9 @@ User=core
 Restart=always
 RestartSec=20
 TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull ${EXHIBITOR_IMAGE}
 ExecStartPre=-/usr/bin/docker kill zookeeper-exhibitor
 ExecStartPre=-/usr/bin/docker rm zookeeper-exhibitor
-ExecStartPre=/usr/bin/docker pull ${EXHIBITOR_IMAGE}
 ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
           --name=zookeeper-exhibitor \
           -p 8181:8181 -p 2181:2181 -p 2888:2888 -p 3888:3888 \
@@ -26,5 +26,5 @@ ExecStop=/usr/bin/docker stop zookeeper-exhibitor
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
+Conflicts=zookeeper-exhibitor@*.service
 MachineMetadata=role=control

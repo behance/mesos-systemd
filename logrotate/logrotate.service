@@ -6,9 +6,9 @@ Requires=docker.service
 [Service]
 User=core
 Restart=always
+ExecStartPre=/usr/bin/docker pull behance/docker-gocron-logrotate
 ExecStartPre=-/usr/bin/docker stop logrotate
 ExecStartPre=-/usr/bin/docker rm -f logrotate
-ExecStartPre=/usr/bin/docker pull behance/docker-gocron-logrotate
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill logrotate
 ExecStartPre=-/usr/bin/docker rm logrotate
