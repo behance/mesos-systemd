@@ -1,0 +1,34 @@
+[Unit]
+Description=run cluster-control jenkins
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=core
+Type=simple
+Restart=always
+RestartSec=20
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/sudo rm -rf /home/core/control-jenkins
+ExecStartPre=/usr/bin/git clone git@github.com:behance/control-jenkins /home/core/control-jenkins
+ExecStartPre=-/usr/bin/docker kill jenkins
+ExecStartPre=-/usr/bin/docker rm jenkins
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run \
+ --name jenkins \
+ -v /home/core/.ssh:/var/jenkins_home/.ssh \
+ -v /home/core/control-jenkins:/var/jenkins_home \
+ -e RUNNING_HOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname` \
+ -e RUNNING_USER=core \
+ -e FLEET_REPO=git@github.com:behance/mesos-systemd.git \
+ -e FLEET_UNIT_ROOT=v1/fleet_units \
+ -p 8080:8080 \
+ -u root \
+ jenkins"
+ExecStop=/usr/bin/docker stop jenkins
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=false
+MachineMetadata=role=control
