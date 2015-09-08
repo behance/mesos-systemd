@@ -65,6 +65,14 @@ do
     sudo /bin/bash ${SCRIPTDIR}/v2/setup/${script}
 done
 
+# fleet units that require AZs
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+for unit in $(ls ${SCRIPTDIR}/v2/fleet-az)
+do
+    sudo fleetctl submit "${SCRIPTDIR}/v2/fleet-az/${unit}"
+    sudo fleetctl start ${unit}@${AZ}
+done
+
 # start generic fleet units
 for unit in $(ls ${SCRIPTDIR}/v2/fleet)
 do
