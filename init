@@ -36,6 +36,15 @@ fi
 # TODO: maybe...re-evaluate this
 echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ${HOMEDIR}/.ssh/config
 
+# Just bootstrap the environment and don't worry about potential changes from
+# the setup scripts or updates from profile.d. The following setup steps are
+# just unit files, which should use the EnvironmentFile systemd option, so
+# this is just here to catch any simple assumptions made by the setup scripts
+if [ -f /etc/environment ]; then
+    source /etc/environment
+fi
+
+# profile.d
 if [ ! -d /etc/profile.d ]; then
     sudo mkdir /etc/profile.d
 fi
@@ -45,17 +54,20 @@ if [ -f /etc/environment ]; then
     source /etc/environment
 fi
 
+# TODO: come up with better way of doing this
 if [ "${NODE_ROLE}" != "control" ]; then
     sudo cp ${SCRIPTDIR}/v2/non-control-profile.d/* /etc/profile.d/.
 fi
 
+# run all setup scripts
 for script in $(ls ${SCRIPTDIR}/v2/setup)
 do
     sudo /bin/bash ${SCRIPTDIR}/v2/setup/${script}
 done
 
+# start generic fleet units
 for unit in $(ls ${SCRIPTDIR}/v2/fleet)
 do
     sudo fleetctl submit ${SCRIPTDIR}/v2/fleet/${unit}
-    sudo fleetctl start ${SCRIPTDIR}/v2/fleet/${unit}
+    sudo fleetctl start ${unit}
 done
