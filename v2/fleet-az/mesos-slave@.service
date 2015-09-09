@@ -1,5 +1,5 @@
 [Unit]
-Description=MesosSlave
+Description=MesosSlave instance for %i
 After=docker.service bootstrap.service
 Requires=docker.service bootstrap.service
 
@@ -47,3 +47,4 @@ WantedBy=multi-user.target
 [X-Fleet]
 Global=true
 MachineMetadata=role=worker
+MachineMetadata=az=%i
