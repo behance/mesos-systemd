@@ -1,0 +1,36 @@
+[Unit]
+Description=Marathon
+After=docker.service zookeeper-exhibitor.service mesos-master.service
+Requires=docker.service
+Wants=zookeeper-exhibitor.service
+
+[Service]
+# MARATHON_IMAGE should be defined here. Either that or v2/setup/mesosphere.sh should update it
+EnvironmentFile=/etc/environment
+Environment=ZOOKEEPER=localhost:2181
+
+User=core
+Restart=always
+RestartSec=20
+TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull ${MARATHON_IMAGE}
+ExecStartPre=-/usr/bin/docker kill marathon
+ExecStartPre=-/usr/bin/docker rm marathon
+ExecStart=/usr/bin/docker run \
+    --name marathon \
+    -e LIBPROCESS_PORT=9090 \
+    --net=host \
+    ${MARATHON_IMAGE} \
+    --master zk://${ZOOKEEPER}/mesos \
+    --zk zk://${ZOOKEEPER}/marathon \
+    --checkpoint \
+    --task_launch_timeout 300000
+ExecStop=/usr/bin/docker stop marathon
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=role=control
+Conflicts=marathon@*.service
+MachineOf=zookeeper-exhibitor@%i.service
