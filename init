@@ -1,21 +1,29 @@
 #!/usr/bin/bash
 
+echo "-------Beginning bootstrap script-------"
+
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HOMEDIR=$(eval echo "~`whoami`")
 
+bash ${SCRIPTDIR}/v2/util/setup-credentials.sh
+
+if [ -f /etc/environment ]; then
+    source /etc/environment
+fi
+
+if [ "$NODE_ROLE" = "control" ]; then
+  sudo bash ${SCRIPTDIR}/v2/util/etcd2-setup.sh $SCRIPTDIR
+fi
+
 etcdctl set /environment/SCRIPTS-FORK behance
 etcdctl set /environment/SCRIPTS-REV  $(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
-
-bash ${SCRIPTDIR}/v2/util/setup-credentials.sh
 
 if [ ! -d /etc/profile.d ]; then
     sudo mkdir /etc/profile.d
 fi
 # copy over files first, ignore errors thrown from directories
 sudo cp ${SCRIPTDIR}/v2/profile.d/* /etc/profile.d/. 2>/dev/null || :
-if [ -f /etc/environment ]; then
-    source /etc/environment
-fi
+
 sudo cp --dereference ${SCRIPTDIR}/v2/profile.d/${NODE_ROLE}/* /etc/profile.d/.
 
 for script in $(ls ${SCRIPTDIR}/v2/setup|grep -e '.sh$')

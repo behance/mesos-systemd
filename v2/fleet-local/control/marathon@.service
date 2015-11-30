@@ -6,6 +6,8 @@ After=docker.service bootstrap.service zk-health.service mesos-master@%i.service
 [Service]
 Environment=ZOOKEEPER=localhost:2181
 Environment="IMAGE=etcdctl get /images/marathon"
+Environment="USER=etcdctl get /marathon/username"
+Environment="PW=etcdctl get /marathon/password"
 
 User=core
 Restart=always
@@ -25,6 +27,7 @@ ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   $($IMAGE) \
   --master zk://${ZOOKEEPER}/mesos \
   --zk zk://${ZOOKEEPER}/marathon \
+  --http_credentials $($USER):$($PW) \
   --checkpoint \
   --task_launch_timeout 300000"
 
