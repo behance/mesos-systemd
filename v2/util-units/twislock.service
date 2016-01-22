@@ -1,0 +1,20 @@
+[Unit]
+Description=adds twislock defender and client certs
+
+[Service]
+EnvironmentFile=/etc/environment
+Environment="twistlockusername=etcdctl get /twistlockusername"
+Environment="twistlockpassword=etcdctl get /twistlock..password"
+User=core
+Type=oneshot
+RemainAfterExit=false
+
+ExecStartPre=curl -sSL -k --header "authorization:Bearer $(eval echo $(echo $(curl -s -H "Content-Type: application/json" -d '{"username":"$twistlockusername", "password":"$twistlockpassword"}' https://adobe.console.twistlock.com:443/api/v1/authenticate) | sed -ne 's/.*"token":"\([^,]*\)".*/\1/p'))" https://adobe.console.twistlock.com/api/v1/scripts/defender.sh -o defender.sh && chmod a+x defender.sh && sudo ./defender.sh
+
+ExecStart=curl -sSL -k --header "authorization:Bearer $(eval echo $(echo $(curl -s -H "Content-Type: application/json" -d '{"username":"$twistlockusername", "password":"$twistlockpassword"}' https://adobe.console.twistlock.com:443/api/v1/authenticate) | sed -ne 's/.*"token":"\([^,]*\)".*/\1/p'))" https://adobe.console.twistlock.com/api/v1/cert/client-certs.sh | sh
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
