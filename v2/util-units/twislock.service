@@ -4,7 +4,7 @@ Description=adds twislock defender and client certs
 [Service]
 EnvironmentFile=/etc/environment
 Environment="twistlockusername=etcdctl get /twistlockusername"
-Environment="twistlockpassword=etcdctl get /twistlock..password"
+Environment="twistlockpassword=etcdctl get /twistlock.password"
 User=core
 Type=oneshot
 RemainAfterExit=false
