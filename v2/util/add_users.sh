@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 USERS_DIRECTORY=$1
 
 USAGE_MESSAGE="Please provide a directory of users to add."
@@ -19,6 +21,7 @@ if [[ -d "$USERS_DIRECTORY" ]]; then
 
     sudo useradd -p "*" -U -m $username -G sudo,docker
     sudo update-ssh-keys -u $username -a $username $user
+    sudo /bin/bash ${SCRIPTDIR}/v2/setup/twistlockclientcert.sh
   done
 
   exit 0;
