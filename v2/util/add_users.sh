@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 USERS_DIRECTORY=$1
 
 USAGE_MESSAGE="Please provide a directory of users to add."
