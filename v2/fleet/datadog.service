@@ -14,12 +14,21 @@ ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent:latest
 ExecStartPre=-/usr/bin/docker kill dd-agent
 ExecStartPre=-/usr/bin/docker rm -f dd-agent
 ExecStart=/usr/bin/bash -c \
-"if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && sudo /usr/bin/docker run --name dd-agent -h `hostname` \
--v /var/run/docker.sock:/var/run/docker.sock \
--v /proc/:/host/proc/:ro \
--v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
--e API_KEY=`etcdctl get /ddapikey` \
-behance/docker-dd-agent"
+"if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && \
+sudo /usr/bin/docker run \
+  --privileged \
+  --name dd-agent \
+  -h `hostname` \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /proc/:/host/proc/:ro \
+  -v /sys:/sys:ro \
+  -v /usr/bin/docker:/usr/bin/docker:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /lib64/libdevmapper.so:/lib/libdevmapper.so.1.02:ro \
+  -v /lib64/libsystemd.so:/lib/libsystemd.so.0:ro \
+  -v /lib64/libgcrypt.so:/lib/libgcrypt.so.20:ro \
+  -e API_KEY=`etcdctl get /ddapikey` \
+  behance/docker-dd-agent"
 ExecStop=/usr/bin/docker stop dd-agent
 
 [X-Fleet]
