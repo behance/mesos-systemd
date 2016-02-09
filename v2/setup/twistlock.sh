@@ -22,9 +22,6 @@ while read line; do
 done < ${HOMEDIR}/.twistlockparameter
 
 
-twistlockusername=$(etcdctl get /twistlockusername)
-twistlockpassword=$(etcdctl get /twistlockpassword)
-twistlockparameter=$(etcdctl get /twistlockparameter)
 
 
 
