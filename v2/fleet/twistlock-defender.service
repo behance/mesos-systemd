@@ -3,7 +3,11 @@ Description=Install Twistlock Defender
 After=docker.service bootstrap.service
 Requires=docker.service
 
+
 [Service]
+Environment="twistlockusername=$(etcdctl get /twistlockusername)"
+Environment="twistlockpassword=$(etcdctl get /twistlockpassword)"
+Environment="twistlockparameter=$(etcdctl get /twistlockparameter)"
 User=core
 TimeoutStartSec=0
 ExecStart=curl -sSL -k --header "authorization:Bearer \
