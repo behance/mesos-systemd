@@ -1,6 +1,6 @@
 t]
 Description=Install Twistlock Client keys
-After=docker.service bootstrap.service create-users.service
+After=docker.service bootstrap.service create-users.service twistlock-defender.service
 Requires=docker.service
 
 [Service]
