@@ -14,8 +14,8 @@ while read line; do
 done < ${HOMEDIR}/.core
 
 
-twistlockclientusername=$(etcdctl get /twistlockclientusername)
-twistlockclientpassword=$(etcdctl get /twistlockclientpassword)
+twistlockclientusername=$(etcdctl get /twistlockclientusercore)
+twistlockclientpassword=$(etcdctl get /twistlockclientpasswordcore)
 twistlockparameter=$(etcdctl get /twistlockparameter)
 
 #steps to generate private cert for each ssh user in HOMEDIR/.docker
