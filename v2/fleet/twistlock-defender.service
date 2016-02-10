@@ -7,7 +7,7 @@ Requires=docker.service
 [Service]
 User=core
 TimeoutStartSec=0
-ExecStart=/usr/bin/sudo bash /home/core/mesos-systemd/v2/util/twistlock-user.sh
+ExecStart=/usr/bin/sudo bash /home/core/mesos-systemd/v2/util/twistlock.sh
 
 [X-Fleet]
 Global=true
