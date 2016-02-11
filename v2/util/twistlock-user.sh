@@ -37,7 +37,7 @@ https://"$(eval echo $twistlockparameter)"/api/v1/cert/client-certs.sh | sh
 
 for i in `ls /home`;
 
-  do sudo cp -rf /root/.docker /home/$i
+  do sudo cp -rf /home/.docker /home/$i
 
 done
 #steps to run twistlock as proxy server
