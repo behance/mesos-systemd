@@ -42,12 +42,17 @@ for i in `ls /home`;
 done
 #steps to run twistlock as proxy server
 
-etcdctl set DOCKER_HOST tcp://$(eval echo $COREOS_PRIVATE_IPV4):9998
-etcdctl set DOCKER_TLS_VERIFY 1
+echo "DOCKER_HOST=tcp://$(eval echo $COREOS_PRIVATE_IPV4):9998" >> /etc/environment
+echo "DOCKER_TLS_VERIFY=1" >> /etc/environment
 
 
-DOCKER_HOST=$(etcdctl get DOCKER_HOST)
-export DOCKER_HOST
 
-DOCKER_TLS_VERIFY=$(etcdctl get DOCKER_TLS_VERIFY)
-export DOCKER_TLS_VERIFY
+#etcdctl set DOCKER_HOST tcp://$(eval echo $COREOS_PRIVATE_IPV4):9998
+#etcdctl set DOCKER_TLS_VERIFY 1
+
+
+#DOCKER_HOST=$(etcdctl get DOCKER_HOST)
+#export DOCKER_HOST
+
+#DOCKER_TLS_VERIFY=$(etcdctl get DOCKER_TLS_VERIFY)
+#export DOCKER_TLS_VERIFY
