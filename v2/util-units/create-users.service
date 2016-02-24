@@ -14,6 +14,7 @@ ExecStartPre=-/usr/bin/rm -rf /home/core/mesos-users
 # TODO: re-visit this - dir should probably be configurable
 # look at the script to see what it's doing - you just need a repo with user public keys
 ExecStart=/usr/bin/bash -c '/usr/bin/git clone git@github.com:behance/mesos-users /home/core/mesos-users && /home/core/mesos-systemd/v2/util/add_users.sh /home/core/mesos-users/users && /home/core/mesos-systemd/v2/util/twistlock-user.sh'
+ExecStartPost=/usr/bin/sudo bash /home/core/mesos-systemd/v2/util/twistlockproxy.sh
 
 [Install]
 WantedBy=multi-user.target
