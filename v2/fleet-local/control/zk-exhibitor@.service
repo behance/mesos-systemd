@@ -7,7 +7,6 @@ Wants=zk-health.service
 
 [Service]
 Environment="IMAGE=etcdctl get /images/zk-exhibitor"
-Environment="ZK_PASSWORD=etcdctl get /zookeeper/ZK_PASSWORD"
 
 User=core
 Restart=always
@@ -26,6 +25,7 @@ ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
   -e S3_BUCKET=`etcdctl get /zookeeper/s3_exhibitor_bucket` \
   -e S3_PREFIX=`etcdctl get /zookeeper/s3_exhibitor_prefix` \
   -e ZK_ENSEMBLE_SIZE=`etcdctl get /zookeeper/ensemble_size` \
+  -e ZK_PASSWORD=`etcdctl get /zookeeper/ZK_PASSWORD` \
   -e AWS_REGION=`curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq .region` \
   -e HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4` \
   $($IMAGE)"
