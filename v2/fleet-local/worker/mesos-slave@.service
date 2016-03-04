@@ -42,7 +42,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
     --executor_registration_timeout=10mins \
     --hostname=`curl -s http://169.254.169.254/latest/meta-data/public-hostname` \
     --log_dir=/var/log/mesos \
-    --master=zk://$($zk_username):$($zk_password)`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos \
+    --master=zk://$($zk_username):$($zk_password)@`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos \
     --work_dir=/var/lib/mesos/slave \
     --cgroups_enable_cfs"
 

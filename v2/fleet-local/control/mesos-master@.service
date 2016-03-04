@@ -31,7 +31,7 @@ ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
   --log_dir=/var/log/mesos \
   --quorum=3 \
   --work_dir=/var/lib/mesos/master \
-  --zk=zk://$($zk_username):$($zk_password)`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos"
+  --zk=zk://$($zk_username):$($zk_password)@`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos"
 
 ExecStop=-/usr/bin/docker stop mesos_master
 
