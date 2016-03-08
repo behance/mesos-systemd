@@ -36,7 +36,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
     -v /var/lib/mesos/slave:/var/lib/mesos/slave \
     $($IMAGE) \
     --ip=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4` \
-    --attributes=zone:$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\;os:coreos;worker_group:$WORKER_GROUP \
+    --attributes=zone:$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\;os:coreos\;worker_group:$WORKER_GROUP \
     --containerizers=docker,mesos \
     --executor_registration_timeout=10mins \
     --hostname=`curl -s http://169.254.169.254/latest/meta-data/public-hostname` \
