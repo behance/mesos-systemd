@@ -5,6 +5,8 @@ After=docker.service bootstrap.service zk-health.service
 
 [Service]
 Environment="IMAGE=etcdctl get /images/mesos-master"
+Environment="zk_username=etcdctl get /zookeeper/ZK_USERNAME"
+Environment="zk_password=etcdctl get /zookeeper/ZK_PASSWORD"
 # NODE_PRODUCT & NODE_TIER should be defined here.
 EnvironmentFile=/etc/environment
 
@@ -30,7 +32,7 @@ ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
   --log_dir=/var/log/mesos \
   --quorum=3 \
   --work_dir=/var/lib/mesos/master \
-  --zk=zk://`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos"
+  --zk=zk://$($zk_username):$($zk_password)@`etcdctl get /environment/ZOOKEEPER_ENDPOINT`/mesos"
 
 ExecStop=-/usr/bin/docker stop mesos_master
 

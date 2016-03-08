@@ -8,6 +8,8 @@ Requires=docker.service
 # NOTE: chronos doesn't need the `zk://`
 Environment=ZOOKEEPER=localhost:2181
 Environment="IMAGE=etcdctl get /images/chronos"
+Environment="zk_username=etcdctl get /zookeeper/ZK_USERNAME"
+Environment="zk_password=etcdctl get /zookeeper/ZK_PASSWORD"
 
 User=core
 Restart=always
@@ -25,7 +27,7 @@ ExecStart=/usr/bin/sh -c "docker run \
   /usr/bin/chronos \
   run_jar \
   --http_port 4400 \
-  --master zk://${ZOOKEEPER}/mesos \
+  --master zk://$($zk_username):$($zk_password)@${ZOOKEEPER}/mesos \
   --mesos_framework_name chronos-`hostname` \
   --zk_hosts ${ZOOKEEPER}"
 
