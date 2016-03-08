@@ -1,7 +1,7 @@
 [Unit]
 Description=MesosSlave @ %i
 After=docker.service bootstrap.service
-Requires=docker.service bootstrap.service zk-health.service
+Requires=docker.service bootstrap.service
 
 [Service]
 Environment="IMAGE=etcdctl get /images/mesos-slave"
@@ -13,7 +13,6 @@ RestartSec=20
 TimeoutStartSec=0
 
 ExecStartPre=/usr/bin/systemctl is-active update-os.service
-ExecStartPre=/usr/bin/systemctl is-active zk-health.service
 # condition / assertion options here for some reason do not prevent the ExecStart from spinning up
 # and mounting / creating .dockercfg/ as a dir
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /home/core/.dockercfg ]; then exit 1; fi"
