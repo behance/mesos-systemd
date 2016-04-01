@@ -10,6 +10,8 @@ Environment="USER=etcdctl get /marathon/username"
 Environment="PW=etcdctl get /marathon/password"
 Environment="zk_username=etcdctl get /zookeeper/ZK_USERNAME"
 Environment="zk_password=etcdctl get /zookeeper/ZK_PASSWORD"
+Environment="principalframework=etcdctl get principalframework"
+Environment="zookeeper_endpoint=etcdctl get /environment/ZOOKEEPER_ENDPOINT"
 
 User=core
 Restart=always
@@ -22,14 +24,18 @@ ExecStartPre=/usr/bin/systemctl is-active mesos-master@*
 ExecStartPre=/usr/bin/sh -c "docker pull $($IMAGE)"
 ExecStartPre=-/usr/bin/docker kill marathon
 ExecStartPre=-/usr/bin/docker rm marathon
+ExecStartPre=/usr/bin/bash /home/core/mesos-systemd/v2/util/credential-framework.sh
 
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   --name marathon \
   -e LIBPROCESS_PORT=9090 \
   --net=host \
+  -v /home/core/mesos-framework/passwd:/home/core/mesos-framework/passwd \
   $($IMAGE) \
-  --master zk://$($zk_username):$($zk_password)@${ZOOKEEPER}/mesos \
-  --zk zk://$($zk_username):$($zk_password)@${ZOOKEEPER}/marathon \
+  --mesos_authentication_principal $($principalframework) \
+  --mesos_authentication_secret_file /home/core/mesos-framework/passwd \
+  --master zk://$($zk_username):$($zk_password)@$($zookeeper_endpoint)/mesos \
+  --zk zk://$($zk_username):$($zk_password)@$($zookeeper_endpoint)/marathon \
   --http_credentials $($USER):$($PW) \
   --checkpoint \
   --task_launch_timeout 300000"

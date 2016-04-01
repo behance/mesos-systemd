@@ -31,6 +31,7 @@ ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
   -v /home/core/mesos-master/passwd:/home/core/mesos-master/passwd \
   $($IMAGE) \
   --authenticate_slaves \
+  --authenticate \
   --credentials=/home/core/mesos-master/passwd \
   --cluster=$NODE_PRODUCT-$NODE_TIER \
   --hostname=`curl -s http://169.254.169.254/latest/meta-data/public-hostname` \
