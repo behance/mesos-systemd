@@ -16,7 +16,7 @@ if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then
   sed -i "s/\[CONTROL_JENKINS_RO_GROUP\]/${CONTROL_JENKINS_RO_GROUP}/g" $JENKINS_DIRECTORY/config.xml
 
   # decode from base64, encode the xml entities and escape awk special characters
-  ESCAPED_DATA="$(echo "${CONTROL_JENKINS_OKTA_METADATA}" | base64 --decode | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g;' | sed -e 's/[\&]/\\\\\\\\&/g')"
+  ESCAPED_DATA="$(echo "${CONTROL_JENKINS_OKTA_METADATA}" | base64 --decode | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g;' | sed -e 's/[\&]/\\\\&/g')"
 
   # replace the label with the sanitized text and save in tmp file
   awk -v r="${ESCAPED_DATA}" '{gsub(/\[CONTROL_JENKINS_OKTA_METADATA\]/,r); print $0}' $JENKINS_DIRECTORY/config.xml > /var/tmp/config.xml
