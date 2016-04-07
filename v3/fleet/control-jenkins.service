@@ -12,10 +12,7 @@ RestartSec=4
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/sudo rm -rf /home/core/control-jenkins
 ExecStartPre=/usr/bin/git clone --branch okta --single-branch https://github.com/remusb/control-jenkins.git /home/core/control-jenkins
-ExecStartPre=if [[ -z $CONTROL_JENKINS_OKTA_METADATA ]] ; then mv /home/core/control-jenkins/config-insecure.xml /home/core/control-jenkins/config.xml ; fi
-ExecStartPre=/usr/bin/sed -i "s/\[CONTROL_JENKINS_ADMIN_GROUP\]/${CONTROL_JENKINS_ADMIN_GROUP}/g" /home/core/control-jenkins/config.xml
-ExecStartPre=/usr/bin/sed -i "s/\[CONTROL_JENKINS_RO_GROUP\]/${CONTROL_JENKINS_RO_GROUP}/g" /home/core/control-jenkins/config.xml
-ExecStartPre=if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then /usr/bin/awk -v r="`echo "${CONTROL_JENKINS_OKTA_METADATA}" | /usr/bin/base64 --decode | /usr/bin/sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g;' | /usr/bin/sed -e 's/[\&]/\\\\\\\\&/g'`" '{gsub(/\[CONTROL_JENKINS_OKTA_METADATA\]/,r); print $0}' /home/core/control-jenkins/config.xml > /var/tmp/config.xml && mv /var/tmp/config.xml /home/core/control-jenkins/config.xml ; fi
+ExecStartPre=/home/core/mesos-systemd/v3/util/jenkins_update_config.sh /home/core/control-jenkins
 ExecStartPre=-/usr/bin/docker kill jenkins
 ExecStartPre=-/usr/bin/docker rm jenkins
 ExecStart=/usr/bin/bash -c \
