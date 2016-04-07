@@ -15,10 +15,7 @@ ExecStartPre=/usr/bin/git clone --branch okta --single-branch https://github.com
 ExecStartPre=if [[ -z $CONTROL_JENKINS_OKTA_METADATA ]] ; then mv /home/core/control-jenkins/config-insecure.xml /home/core/control-jenkins/config.xml ; fi
 ExecStartPre=/usr/bin/sed -i "s/\[CONTROL_JENKINS_ADMIN_GROUP\]/${CONTROL_JENKINS_ADMIN_GROUP}/g" /home/core/control-jenkins/config.xml
 ExecStartPre=/usr/bin/sed -i "s/\[CONTROL_JENKINS_RO_GROUP\]/${CONTROL_JENKINS_RO_GROUP}/g" /home/core/control-jenkins/config.xml
-ExecStartPre=if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then \
-    ESCAPED_DATA="$(echo "${CONTROL_JENKINS_OKTA_METADATA}" | base64 --decode | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g;' | sed -e 's/[\&]/\\\\&/g')" \
-    awk -v r="${ESCAPED_DATA}" '{gsub(/\[CONTROL_JENKINS_OKTA_METADATA\]/,r); print $0}' /home/core/control-jenkins/config.xml > /var/tmp/config.xml && mv /var/tmp/config.xml /home/core/control-jenkins/config.xml \
-  fi
+ExecStartPre=if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then /usr/bin/awk -v r="`echo "${CONTROL_JENKINS_OKTA_METADATA}" | /usr/bin/base64 --decode | /usr/bin/sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g;' | /usr/bin/sed -e 's/[\&]/\\\\\\\\&/g'`" '{gsub(/\[CONTROL_JENKINS_OKTA_METADATA\]/,r); print $0}' /home/core/control-jenkins/config.xml > /var/tmp/config.xml && mv /var/tmp/config.xml /home/core/control-jenkins/config.xml ; fi
 ExecStartPre=-/usr/bin/docker kill jenkins
 ExecStartPre=-/usr/bin/docker rm jenkins
 ExecStart=/usr/bin/bash -c \
