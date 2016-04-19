@@ -1,0 +1,30 @@
+[Unit]
+Description=Install Scalock UI
+After=docker.service bootstrap.service
+Requires=docker.service
+
+
+[Service]
+User=core
+TimeoutStartSec=0
+
+
+ExecStart=/usr/bin/sh -c "sudo docker run -d -p 8083:8080 --name scalock-web --user=root \
+   -e SCALOCK_DB_DATABASE=`etcdctl get /SCALOCK/SCALOCK_DB_DATABASE` \
+   -e SCALOCK_DB_ENGINE=`etcdctl get /SCALOCK/SCALOCK_DB_ENGINE` \
+   -e SCALOCK_DB_PASSWORD=`etcdctl get /SCALOCK/SCALOCK_DB_PASSWORD` \
+   -e SCALOCK_DB_PATH=`etcdctl get /SCALOCK/SCALOCK_DB_PATH` \
+   -e SCALOCK_DB_USERNAME=`etcdctl get /SCALOCK/SCALOCK_DB_USERNAME` \
+   -e SCALOCK_SSH_IP_PORT="scalock-gateway:3622" \
+   -e SCALOCK_AUDIT_DATABASE=`etcdctl get /SCALOCK/SCALOCK_AUDIT_DATABASE` \
+   -e SCALOCK_AUDIT_ENGINE=`etcdctl get /SCALOCK/SCALOCK_AUDIT_ENGINE` \
+   -e SCALOCK_AUDIT_PASSWORD=`etcdctl get /SCALOCK/SCALOCK_AUDIT_PASSWORD` \
+   -e SCALOCK_AUDIT_PATH=`etcdctl get /SCALOCK/SCALOCK_AUDIT_PATH` \
+   -e SCALOCK_AUDIT_USERNAME=`etcdctl get /SCALOCK/SCALOCK_AUDIT_USERNAME` \
+   -e SCALOCK_KERNEL_MODE_ENABLED=false \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   --link scalock-gateway \
+   scalock/scalock-server"
+
+[X-Fleet]
+Global=true
