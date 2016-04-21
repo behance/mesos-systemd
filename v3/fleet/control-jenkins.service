@@ -11,7 +11,7 @@ Restart=always
 RestartSec=4
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/sudo rm -rf /home/core/control-jenkins
-ExecStartPre=ExecStartPre=/usr/bin/git clone git@github.com:adobe-platform/control-jenkins /home/core/control-jenkins
+ExecStartPre=/usr/bin/git clone git@github.com:adobe-platform/control-jenkins /home/core/control-jenkins
 ExecStartPre=/home/core/mesos-systemd/v3/util/jenkins_update_config.sh /home/core/control-jenkins
 ExecStartPre=-/usr/bin/docker kill jenkins
 ExecStartPre=-/usr/bin/docker rm jenkins
