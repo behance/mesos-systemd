@@ -8,6 +8,10 @@ Requires=docker.service
 # NOTE: chronos doesn't need the `zk://`
 Environment=ZOOKEEPER=localhost:2181
 Environment="IMAGE=etcdctl get /images/chronos"
+Environment="zk_username=etcdctl get /zookeeper/ZK_USERNAME"
+Environment="zk_password=etcdctl get /zookeeper/ZK_PASSWORD"
+Environment="principalframework=etcdctl get /frameworkauth/username"
+Environment="zookeeper_endpoint=etcdctl get /environment/ZOOKEEPER_ENDPOINT"
 
 User=core
 Restart=always
@@ -16,16 +20,20 @@ TimeoutStartSec=0
 ExecStartPre=/usr/bin/sh -c "docker pull $($IMAGE)"
 ExecStartPre=-/usr/bin/docker kill chronos
 ExecStartPre=-/usr/bin/docker rm chronos
+ExecStartPre=/usr/bin/bash /home/core/mesos-systemd/v3/util/credential-framework.sh
 ExecStart=/usr/bin/sh -c "docker run \
   --name chronos \
   --net=host \
+  -v /home/core/mesos-framework/passwd:/home/core/mesos-framework/passwd \
   --env LIBPROCESS_IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4` \
   --env LIBPROCESS_PORT=4401 \
   $($IMAGE) \
   /usr/bin/chronos \
   run_jar \
   --http_port 4400 \
-  --master zk://${ZOOKEEPER}/mesos \
+  --mesos_authentication_principal $($principalframework) \
+  --mesos_authentication_secret_file /home/core/mesos-framework/passwd \
+  --master zk://$($zk_username):$($zk_password)@$($zookeeper_endpoint)/mesos \
   --mesos_framework_name chronos-`hostname` \
   --zk_hosts ${ZOOKEEPER}"
 

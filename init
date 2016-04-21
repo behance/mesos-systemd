@@ -13,7 +13,9 @@ echo "Using version: $VERSION"
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HOMEDIR=$(eval echo "~`whoami`")
 
-bash ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh
+if [[ "$VERSION" = "v2" ]]; then
+  bash ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh
+fi
 
 if [ -f /etc/environment ]; then
     source /etc/environment
@@ -46,6 +48,11 @@ for script in $(ls ${SCRIPTDIR}/$VERSION/setup|grep -e '.sh$')
 do
     sudo /bin/bash ${SCRIPTDIR}/$VERSION/setup/${script}
 done
+
+# This must be after setup scripts are run so that defaults don't overwrite custom-provided etcd vals
+if [[ "$VERSION" = "v3" ]]; then
+  bash ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh
+fi
 
 # fleet units specific to this node
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}|grep -e '.service$')

@@ -14,7 +14,6 @@ etcdctl set images-control-bootstrapped true
 
 etcdctl set /images/chronos      "mesosphere/chronos:chronos-2.4.0-0.1.20150828104228.ubuntu1404-mesos-0.27.0-0.2.190.ubuntu1404"
 etcdctl set /images/fd           "behance/flight-director:latest"
-etcdctl set /images/hud          "behance/flight-director-hud:latest"
 etcdctl set /images/marathon     "mesosphere/marathon:v0.15.1"
 etcdctl set /images/mesos-master "mesosphere/mesos-master:0.27.0-0.2.190.ubuntu1404"
 etcdctl set /images/zk-exhibitor "behance/docker-zk-exhibitor:latest"
@@ -25,7 +24,6 @@ docker pull jenkins
 docker pull behance/docker-dd-agent-mesos
 docker pull $(etcdctl get /images/chronos)
 docker pull $(etcdctl get /images/fd)
-docker pull $(etcdctl get /images/hud)
 docker pull $(etcdctl get /images/marathon)
 docker pull $(etcdctl get /images/mesos-master)
 docker pull $(etcdctl get /images/zk-exhibitor)

@@ -1,0 +1,31 @@
+[Unit]
+Description=Proxy { Memcached } @ %i
+After=docker.service  
+Requires=docker.service
+
+
+[Service]
+User=core
+Restart=always
+RestartSec=5
+TimeoutStartSec=0
+
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull borja/docker-memcached"
+ExecStartPre=-/usr/bin/docker kill memcached
+ExecStartPre=-/usr/bin/docker rm memcached
+
+# NOTE: it's critical to source the etcdctl.sh file so that etcd connects to the correct cluster.
+ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
+  echo $($CMD) | xargs docker run \
+    --name memcached \
+    borja/docker-memcached"
+
+ExecStop=-/usr/bin/docker stop memcached
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=false
+MachineMetadata=role=it-hybrid
+MachineMetadata=ip=%i

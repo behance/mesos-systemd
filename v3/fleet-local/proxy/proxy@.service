@@ -34,5 +34,4 @@ WantedBy=multi-user.target
 [X-Fleet]
 Global=false
 MachineMetadata=role=proxy
-MachineMetadata=role=it-hybrid
 MachineMetadata=ip=%i
