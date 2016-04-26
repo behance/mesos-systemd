@@ -58,6 +58,14 @@ if [[ $AV_SECRETS == *"GIT_PULL_KEY_PART_2"* ]]; then
     echo "$GIT_PULL_KEY_CONTENTS_PART_TWO" >> ${HOMEDIR}/.ssh/id_rsa
 fi
 
+# Save the RDS password to environment variable in control tier
+if [[ "$NODE_ROLE" = "control" && $AV_SECRETS == *"RDSPASSWORD"* ]]; then
+    RDS_PASSWORD=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name RDSPASSWORD --format plain`
+    sudo echo $RDS_PASSWORD >> /etc/environment
+    sudo export FLIGHT_DIRECTOR_DB_PASSWORD="$RDS_PASSWORD"
+    etcdctl set -- /FD/FD_DB_PASSWORD $RDS_PASSWORD
+fi
+
 sudo chown -R ${OWNER}:${OWNER} ${HOMEDIR}/.ssh/id_rsa
 chmod 600 ${HOMEDIR}/.ssh/id_rsa
 
