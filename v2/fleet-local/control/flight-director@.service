@@ -49,6 +49,7 @@ ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   -e FD_MARATHON_MASTER_PROTOCOL=`etcdctl get /FD/FD_MARATHON_MASTER_PROTOCOL` \
   -e FD_MESOS_MASTER_PROTOCOL=`etcdctl get /FD/FD_MESOS_MASTER_PROTOCOL` \
   -e FD_ALLOW_MARATHON_UNVERIFIED_TLS=`etcdctl get /FD/FD_ALLOW_MARATHON_UNVERIFIED_TLS` \
+  -e FD_PROXY_PORT_RANGE=`etcdctl get /FD/FD_PROXY_PORT_RANGE` \
   $($IMAGE)"
 
 ExecStop=-/usr/bin/docker stop flight-director
