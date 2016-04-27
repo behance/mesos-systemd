@@ -13,7 +13,6 @@ fi
 etcdctl set images-it-hybrid-bootstrapped true
 
 etcdctl set /images/fd           "behance/flight-director:latest"
-etcdctl set /images/hud          "behance/flight-director-hud:latest"
 
 etcdctl set /images/capcom       "behance/capcom:latest"
 

@@ -18,7 +18,6 @@ ExecStartPre=-/usr/bin/docker rm memcached
 ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name memcached \
-    -p 11211:11211 \
     borja/docker-memcached"
 
 ExecStop=-/usr/bin/docker stop memcached

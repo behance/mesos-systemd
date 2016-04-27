@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -xe
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HOMEDIR=$(eval echo "~`whoami`")
@@ -6,36 +6,27 @@ OWNER=$(whoami)
 
 source /etc/environment
 
-if [ ! -z $SECURE_FILES ]; then
-    # have to use  us-east-1 - aws tool does not recognize anything else
-    # for S3 download
-    AWS_CREDS=""
-    if [ ! -z $AWS_ACCESS_KEY ]; then
-        AWS_CREDS=" -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY \
-         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY "
-    fi
-    sudo docker run --rm \
-        -v ${HOMEDIR}:/data/  $AWS_CREDS behance/docker-aws-s3-downloader \
-         us-east-1 $CONTROL_TIER_S3SECURE_BUCKET $SECURE_FILES
+TABLE=`sudo echo $SECRETS_TABLE`
+docker pull behance/docker-aws-secrets-downloader:latest
 
-    # must chown all files to core for use
-    FILES=(${SECURE_FILES//:/ })
-    for file in "${FILES[@]}"; do
-        PIECES=(${file//,/ })
-        S3FILE=${PIECES[0]}
-        PERMS=${PIECES[1]}
-        TARGET=${PIECES[2]}
+# Create a dockercfg
+DOCKERCFG_CONTENTS=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name DOCKERCFG --format plain`
+echo "$DOCKERCFG_CONTENTS" > /home/${OWNER}/.dockercfg
+sudo chown -R ${OWNER}:${OWNER} /home/${OWNER}/.dockercfg
+sudo cp /home/${OWNER}/.dockercfg /root/.dockercfg
 
-        if [ "${TARGET}" == "" ]; then
-            TARGET="${S3FILE}"
-        fi
-
-        sudo chown -R ${OWNER}:${OWNER} ${HOMEDIR}/${TARGET}
-    done
+# Save the Git Pull Key (must decode base64 since using "plain" option)
+GIT_PULL_KEY_CONTENTS=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name GIT_PULL_KEY --format plain | base64 -d`
+echo "$GIT_PULL_KEY_CONTENTS" > ${HOMEDIR}/.ssh/id_rsa
+# Check to see if the key has a "part 2"
+#     Get all available secrets and configs
+AV_SECRETS=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets`
+if [[ $AV_SECRETS == *"GIT_PULL_KEY_PART_2"* ]]; then
+    GIT_PULL_KEY_CONTENTS_PART_TWO=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name GIT_PULL_KEY_PART_2 --format plain | base64 -d`
+    echo "$GIT_PULL_KEY_CONTENTS_PART_TWO" >> ${HOMEDIR}/.ssh/id_rsa
 fi
-
-# make sure that root has a .dockercfg
-sudo cp /home/${OWNER}/.dockercfg /root/.
+sudo chown -R ${OWNER}:${OWNER} ${HOMEDIR}/.ssh/id_rsa
+chmod 600 ${HOMEDIR}/.ssh/id_rsa
 
 # ensure that we have a public key for our RSA key and that it's authorized
 if [ -f ${HOMEDIR}/.ssh/id_rsa ]; then
