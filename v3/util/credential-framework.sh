@@ -8,8 +8,8 @@ HOMEDIR=$(eval echo "~`whoami`")
 secretframework=$(etcdctl get /frameworkauth/secret)
 
 mkdir $HOMEDIR/mesos-framework
-touch $HOMEDIR/mesos-framework/passwd
-
 
 
 echo -n "$(eval echo $secretframework)" > $HOMEDIR/mesos-framework/passwd
+
+chmod 0600 /home/core/mesos-framework/passwd

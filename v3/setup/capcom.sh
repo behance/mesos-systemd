@@ -29,3 +29,4 @@ etcdctl set /CP/CP_PROXY_ENABLED true
 etcdctl set /CP/CP_PROXY_RESTART_SCRIPT /restart_nginx_docker.sh
 etcdctl set /CP/CP_PROXY_TIMEOUT 60000
 etcdctl set /CP/CP_PROXY_DOCKER_COMMAND "nginx -g 'daemon off;'"
+etcdctl set /CP/CP_SSL_CERT_LOCATION ""
