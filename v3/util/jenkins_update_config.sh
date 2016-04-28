@@ -9,9 +9,9 @@ if [[ ! $1 ]]; then
   exit 1;
 fi
 
-CONTROL_JENKINS_OKTA_METADATA = $(etcdctl get /jenkins/ControlJenkinsOktaMetadata)
-CONTROL_JENKINS_ADMIN_GROUP = $(etcdctl get /jenkins/ControlJenkinsAdminGroup)
-CONTROL_JENKINS_RO_GROUP = $(etcdctl get /jenkins/ControlJenkinsRoGroup)
+CONTROL_JENKINS_OKTA_METADATA=$(etcdctl get /jenkins/ControlJenkinsOktaMetadata)
+CONTROL_JENKINS_ADMIN_GROUP=$(etcdctl get /jenkins/ControlJenkinsAdminGroup)
+CONTROL_JENKINS_RO_GROUP=$(etcdctl get /jenkins/ControlJenkinsRoGroup)
 
 if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then 
   # replace the admin group
