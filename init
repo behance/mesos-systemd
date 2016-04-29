@@ -5,21 +5,24 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HOMEDIR=$(eval echo "~`whoami`")
 source /etc/environment || :
 
-# determine version, run appropriate setup-credentials script
+# determine version
 if [ -z "$1" ]; then
   VERSION="v2"
 else
   VERSION="$1"
 fi
-${SCRIPTDIR}/$VERSION/util/setup-credentials.sh || :
 
-# ENVIRONMENT SPECIFIC SETUP SCRIPTS
+# Control tier - must form an etcd2 cluster first
 if [ "$NODE_ROLE" = "control" ]; then
   sudo ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
 fi
 if [ "$NODE_ROLE" = "it-hybrid" ]; then
   sudo ${SCRIPTDIR}/itv1/util/etcd2-setup.sh $SCRIPTDIR
 fi
+
+# run appropriate setup-credentials script
+# must happen after etcd2 peers so that etcdctl can actually be used
+${SCRIPTDIR}/$VERSION/util/setup-credentials.sh || :
 
 # SETUP profile.d
 sudo mkdir /etc/profile.d || :

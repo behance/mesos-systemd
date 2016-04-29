@@ -34,6 +34,13 @@ if [ -f ${HOMEDIR}/.ssh/id_rsa ]; then
     cat ${HOMEDIR}/.ssh/id_rsa.pub >> ${HOMEDIR}/.ssh/authorized_keys
 fi
 
+# Save the RDS password to environment variable in control tier
+# TODO: :(
+if [[ "$NODE_ROLE" = "control" && $AV_SECRETS == *"RDSPASSWORD"* ]]; then
+    RDSPASSWORD=`sudo docker run behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name RDSPASSWORD --format plain`
+    etcdctl set /environment/RDSPASSWORD $RDSPASSWORD
+fi
+
 # ignore requests against github.com
 # TODO: maybe...re-evaluate this
 echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ${HOMEDIR}/.ssh/config
