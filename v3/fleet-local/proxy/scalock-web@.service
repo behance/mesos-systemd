@@ -1,0 +1,31 @@
+[Unit]
+Description=Install Scalock UI
+After=docker.service bootstrap.service
+Requires=docker.service
+
+
+[Service]
+User=core
+TimeoutStartSec=0
+Environment="dbpassword=etcdctl get /scalock/dbpassword"
+Environment="dbusername=etcdctl get /scalock/dbpassword"
+Environment="scalockdbname=etcdctl get /scalock/dbname"
+Environment="scalockdb_endpoint=etcdctl get /scalock/scalockdb_endpoint"
+
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh"
+
+
+ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
+   sudo docker run -d -p 8083:8080 --name scalock-web --user=root \
+   -e SCALOCK_DBURL="postgres://$($dbusername):$($dbpassword)@$($scalockdb_endpoint)?sslmode=disable"    \
+   -e SCALOCK_DBUSER=$($dbusername)  \
+   -e SCALOCK_DBPASSWORD=$dbpassword \
+   -e SCALOCK_DBNAME=$($scalockdbname)   \
+   -e SCALOCK_DBHOST=scalock.cu5peyhenvzx.us-east-1.rds.amazonaws.com  \
+   -e SCALOCK_SSH_IP_PORT="scalock-gateway:3622"  \
+   -e SCALOCK_KERNEL_MODE_ENABLED=false  \
+   -v /var/run/docker.sock:/var/run/docker.sock  \
+   --link scalock-gateway    scalock/scalock-server:stable"
+
+[X-Fleet]
+Global=true

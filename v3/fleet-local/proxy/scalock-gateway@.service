@@ -1,0 +1,28 @@
+Unit]
+Description=Install Scalock Gateway
+After=docker.service bootstrap.service
+Requires=docker.service
+
+
+[Service]
+User=core
+TimeoutStartSec=0
+Environment="dbpassword=etcdctl get /scalock/dbpassword"
+Environment="dbusername=etcdctl get /scalock/dbpassword"
+Environment="scalockdbname=etcdctl get /scalock/dbname"
+Environment="scalockdb_endpoint=etcdctl get /scalock/scalockdb_endpoint"
+
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh"
+
+
+ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
+  sudo docker run -d -p 3622:3622 --name scalock-gateway  \
+  -e SCALOCK_DBURL="postgres://$($dbusername):$($dbpassword)@$($scalockdb_endpoint)?sslmode=disable"   \
+  -e SCALOCK_DBUSER=$($dbusername)  \
+  -e SCALOCK_DBPASSWORD=$($dbpassword)   \
+  -e SCALOCK_DBNAME=$($scalockdbname)    \
+  -e SCALOCK_DBHOST=$($scalockdb_endpoint)
+  scalock/scalock-gateway:stable"
+
+[X-Fleet]
+Global=true
