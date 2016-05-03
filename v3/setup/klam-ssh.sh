@@ -58,7 +58,7 @@ echo "}" >> /home/core/klam-ssh.conf
 mkdir -p /opt/klam/lib /opt/klam/lib64 /etc/ld.so.conf.d
 
 # Docker volume mount
-docker run --name klam-ssh -v /opt/klam/lib64:/data ${IMAGE}
+docker create --name klam-ssh ${IMAGE}
 
 # Copy libnss_ato library
 docker cp klam-ssh:/tmp/klam-build/coreos/libnss_ato.so.2 /opt/klam/lib64
