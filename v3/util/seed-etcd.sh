@@ -26,5 +26,5 @@ echo "$AV_CONFIGS" | while read line ; do
     CONFIG_PATH=`echo $CONFIG | cut -d' ' -f1`
     CONFIG_VAL=`echo $CONFIG | cut -d' ' -f2-`
 
-    etcdctl set $CONFIG_PATH "$CONFIG_VAL"
+    etcdctl set -- $CONFIG_PATH "$CONFIG_VAL"
 done
