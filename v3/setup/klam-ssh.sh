@@ -1,58 +1,65 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
 REGION=${AZ::-1}
-ROLE_NAME="$(etcdctl get /klam-ssh/ROLE_NAME)"
-ENCRYPTION_ID="$(etcdctl get /klam-ssh/ENCRYPTION_ID)"
-ENCRYPTION_KEY="$(etcdctl get /klam-ssh/ENCRYPTION_KEY)"
-KEY_LOCATION_PREFIX="$(etcdctl get /klam-ssh/KEY_LOCATION_PREFIX)"
+ROLE_NAME="$(etcdctl get /klam-ssh/config/role-name)"
+ENCRYPTION_ID="$(etcdctl get /klam-ssh/config/encryption-id)"
+ENCRYPTION_KEY="$(etcdctl get /klam-ssh/config/encryption-key)"
+KEY_LOCATION_PREFIX="$(etcdctl get /klam-ssh/config/key-location-prefix)"
 IMAGE="$(etcdctl get /images/klam-ssh)"
+: ${IMAGE:="adobecloudops/klam-ssh:latest"}
 
 
-if [[ $REGION == "eu-west-1" ]]; then
-    KEY_LOCATION="-ew1"
-elif [[ $REGION == "ap-northeast-1" ]]; then
-    KEY_LOCATION="-an1"
-elif [[ $REGION == "us-east-1" ]]; then
-    KEY_LOCATION="-ue1"
-elif [[ $REGION == "us-west-1" ]]; then
-    KEY_LOCATION="-uw1"
-elif [[ $REGION == "us-west-2" ]]; then
-    KEY_LOCATION="-uw2"
-else
+case $REGION in
+  "eu-west-1")
+    KEY_LOCATION="-ew1" ;;
+  "ap-northeast-1")
+    KEY_LOCATION="-an1" ;;
+  "us-east-1")
+    KEY_LOCATION="-ue1" ;;
+  "us-west-1")
+    KEY_LOCATION="-uw1" ;;
+  "us-west-2")
+    KEY_LOCATION="-uw2" ;;
+  *)
     echo "An incorrect region value specified"
     exit 1
-fi
+    ;;
+esac
 
 # create nsswitch.conf
-echo "passwd:     files usrfiles ato" > /home/core/nsswitch.conf
-echo "shadow:     files usrfiles ato" >> /home/core/nsswitch.conf
-echo "group:      files usrfiles ato" >> /home/core/nsswitch.conf
-echo -e "\n" >> /home/core/nsswitch.conf
-echo "hosts:      files usrfiles dns" >> /home/core/nsswitch.conf
-echo "networks:   files usrfiles dns" >> /home/core/nsswitch.conf
-echo -e "\n" >> /home/core/nsswitch.conf
-echo "services:   files usrfiles" >> /home/core/nsswitch.conf
-echo "protocols:  files usrfiles" >> /home/core/nsswitch.conf
-echo "rpc:        files usrfiles" >> /home/core/nsswitch.conf
-echo -e "\n" >> /home/core/nsswitch.conf
-echo "ethers:     files" >> /home/core/nsswitch.conf
-echo "netmasks:   files" >> /home/core/nsswitch.conf
-echo "netgroup:   nisplus" >> /home/core/nsswitch.conf
-echo "bootparams: files" >> /home/core/nsswitch.conf
-echo "automount:  files nisplus" >> /home/core/nsswitch.conf
-echo "aliases:    files nisplus" >> /home/core/nsswitch.conf
+cat << EOT >> /home/core/nsswitch.conf
+passwd:     files usrfiles ato
+shadow:     files usrfiles ato
+group:      files usrfiles ato
+
+hosts:      files usrfiles dns
+networks:   files usrfiles dns
+
+services:   files usrfiles
+protocols:  files usrfiles
+rpc:        files usrfiles
+
+ethers:     files
+netmasks:   files
+netgroup:   nisplus
+bootparams: files
+automount:  files nisplus
+aliases:    files nisplus
+EOT
 
 # create klam-ssh.conf
-echo "{" > /home/core/klam-ssh.conf
-echo "    \"key_location\": \"${KEY_LOCATION_PREFIX}${KEY_LOCATION}\"," >> /home/core/klam-ssh.conf
-echo "    \"role_name\": \"${ROLE_NAME}\"," >> /home/core/klam-ssh.conf
-echo "    \"encryption_id\": \"${ENCRYPTION_ID}\"," >> /home/core/klam-ssh.conf
-echo "    \"encryption_key\": \"${ENCRYPTION_KEY}\"," >> /home/core/klam-ssh.conf
-echo "    \"resource_location\": \"amazon\"," >> /home/core/klam-ssh.conf
-echo "    \"time_skew\": \"permissive\"," >> /home/core/klam-ssh.conf
-echo "    \"s3_region\": \"${REGION}\"" >> /home/core/klam-ssh.conf
-echo "}" >> /home/core/klam-ssh.conf
+cat << EOT >> /home/core/klam-ssh.conf
+{
+    key_location: ${KEY_LOCATION_PREFIX}${KEY_LOCATION},
+    role_name: ${ROLE_NAME},
+    encryption_id: ${ENCRYPTION_ID},
+    encryption_key: ${ENCRYPTION_KEY},
+    resource_location: amazon,
+    time_skew: permissive,
+    s3_region: ${REGION}
+}
+EOT
 
 # Create directory structure
 mkdir -p /opt/klam/lib /opt/klam/lib64 /etc/ld.so.conf.d
@@ -117,7 +124,6 @@ echo 'AuthorizedKeysCommand /opt/klam/lib/authorizedkeys_command.sh' >> sshd_con
 echo 'AuthorizedKeysCommandUser root' >> sshd_config
 mv -f sshd_config /etc/ssh/sshd_config
 cat /etc/ssh/sshd_config
-echo ""
 
 # Change ownership of authorizedkeys_command
 chown root:root /home/core/mesos-systemd/v3/util/authorizedkeys_command.sh
