@@ -1,5 +1,7 @@
 #!/bin/bash -xe
 
+etcdctl set /images/klam-ssh  "adobecloudops/klam-ssh:latest"
+
 AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
 REGION=${AZ::-1}
 ROLE_NAME="$(etcdctl get /klam-ssh/config/role-name)"
@@ -7,7 +9,6 @@ ENCRYPTION_ID="$(etcdctl get /klam-ssh/config/encryption-id)"
 ENCRYPTION_KEY="$(etcdctl get /klam-ssh/config/encryption-key)"
 KEY_LOCATION_PREFIX="$(etcdctl get /klam-ssh/config/key-location-prefix)"
 IMAGE="$(etcdctl get /images/klam-ssh)"
-: ${IMAGE:="adobecloudops/klam-ssh:latest"}
 
 
 case $REGION in
