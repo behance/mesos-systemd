@@ -15,23 +15,26 @@ TimeoutStartSec=0
 
 ExecStartPre=/usr/bin/systemctl is-active update-os.service
 ExecStartPre=/usr/bin/sh -c "docker pull $($IMAGE)"
-ExecStartPre=-/usr/bin/docker kill zookeeper-exhibitor
-ExecStartPre=-/usr/bin/docker rm zookeeper-exhibitor
+ExecStartPre=-/usr/bin/docker kill zk-exhibitor
+ExecStartPre=-/usr/bin/docker rm zk-exhibitor
 
-ExecStart=/usr/bin/sh -c "sudo /usr/bin/docker run \
-  --name=zookeeper-exhibitor \
-  -p 8181:8181 -p 2181:2181 -p 2888:2888 -p 3888:3888 \
+ExecStart=/usr/bin/bash -c "sudo docker run \
+  --name=zk-exhibitor \
+  -p 8181:8181 \
+  -p 2181:2181 \
+  -p 2888:2888 \
+  -p 3888:3888 \
   -v /opt/zookeeper/transactions:/opt/zookeeper/transactions \
   -v /opt/zookeeper/snapshots:/opt/zookeeper/snapshots \
-  -e S3_BUCKET=`etcdctl get /zookeeper/s3_exhibitor_bucket` \
-  -e S3_PREFIX=`etcdctl get /zookeeper/s3_exhibitor_prefix` \
-  -e ZK_ENSEMBLE_SIZE=`etcdctl get /zookeeper/ensemble_size` \
-  -e ZK_PASSWORD=`etcdctl get /zookeeper/ZK_PASSWORD` \
-  -e AWS_REGION=`curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq .region` \
-  -e HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4` \
+  -e S3_PREFIX=$(etcdctl get /zookeeper/config/exhibitor/s3-prefix) \
+  -e S3_BUCKET=$(etcdctl get /zookeeper/config/exhibitor/s3-bucket) \
+  -e ZK_ENSEMBLE_SIZE=$(etcdctl get /zookeeper/config/ensemble-size) \
+  -e ZK_PASSWORD=$(etcdctl get /zookeeper/config/password) \
+  -e AWS_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document|jq .region) \
+  -e HOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) \
   $($IMAGE)"
 
-ExecStop=-/usr/bin/docker stop zookeeper-exhibitor
+ExecStop=-/usr/bin/docker stop zk-exhibitor
 
 [Install]
 WantedBy=multi-user.target

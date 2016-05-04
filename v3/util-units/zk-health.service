@@ -13,7 +13,7 @@ Restart=on-failure
 # array of objects, each representing a ZK node
 Environment="EX_QUERY=curl -sS localhost:8181/exhibitor/v1/cluster/status"
 # expected size of ensemble after it's done
-Environment="CTL_SIZE=etcdctl get /environment/CONTROL_CLUSTER_SIZE"
+Environment="CTL_SIZE=etcdctl get /zookeeper/config/ensemble-size"
 
 ExecStartPre=/usr/bin/bash -c 'while [ "$(systemctl is-active zk-exhibitor@*)" != "active" ]; do sleep 2; done'
 ExecStartPre=/usr/bin/sleep 16

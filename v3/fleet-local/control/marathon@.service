@@ -7,11 +7,11 @@ After=docker.service bootstrap.service zk-health.service mesos-master@%i.service
 Environment=ZOOKEEPER=localhost:2181
 Environment="IMAGE=etcdctl get /images/marathon"
 Environment="USER=etcdctl get /marathon/username"
-Environment="PW=etcdctl get /marathon/password"
-Environment="zk_username=etcdctl get /zookeeper/ZK_USERNAME"
-Environment="zk_password=etcdctl get /zookeeper/ZK_PASSWORD"
-Environment="principalframework=etcdctl get /frameworkauth/username"
-Environment="zookeeper_endpoint=etcdctl get /environment/ZOOKEEPER_ENDPOINT"
+Environment="PASSWORD=etcdctl get /marathon/password"
+Environment="MESOS_USERNAME=etcdctl get /frameworkauth/username"
+Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
+Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
+Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
 
 User=core
 Restart=always
@@ -30,13 +30,13 @@ ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   --name marathon \
   -e LIBPROCESS_PORT=9090 \
   --net=host \
-  -v /home/core/mesos-framework/passwd:/home/core/mesos-framework/passwd \
+  -v /home/core/mesos-framework/passwd:/opt/mesos/credentials \
   $($IMAGE) \
-  --mesos_authentication_principal $($principalframework) \
-  --mesos_authentication_secret_file /home/core/mesos-framework/passwd \
-  --master zk://$($zk_username):$($zk_password)@$($zookeeper_endpoint)/mesos \
-  --zk zk://$($zk_username):$($zk_password)@$($zookeeper_endpoint)/marathon \
-  --http_credentials $($USER):$($PW) \
+  --mesos_authentication_principal $($MESOS_USERNAME) \
+  --mesos_authentication_secret_file /opt/mesos/credentials \
+  --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/mesos \
+  --zk zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/marathon \
+  --http_credentials $($USER):$($PASSWORD) \
   --checkpoint \
   --task_launch_timeout 300000"
 
