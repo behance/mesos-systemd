@@ -13,7 +13,10 @@ CONTROL_JENKINS_OKTA_METADATA=$(etcdctl get /jenkins/config/okta/metadata)
 CONTROL_JENKINS_ADMIN_GROUP=$(etcdctl get /jenkins/config/okta/admin-group)
 CONTROL_JENKINS_RO_GROUP=$(etcdctl get /jenkins/config/okta/read-group)
 
-if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then 
+if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then
+  # use the secure Jenkins config
+  mv -f $JENKINS_DIRECTORY/config-secure.xml $JENKINS_DIRECTORY/config.xml
+
   # replace the admin group
   sed -i "s/\[CONTROL_JENKINS_ADMIN_GROUP\]/${CONTROL_JENKINS_ADMIN_GROUP}/g" $JENKINS_DIRECTORY/config.xml
   # replace the read only group
@@ -30,7 +33,5 @@ if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then
 
   echo "Control Jenkins: Updated Okta configuration"
 else
-  mv $JENKINS_DIRECTORY/config-insecure.xml $JENKINS_DIRECTORY/config.xml
-
   echo "Control Jenkins: Using insecure configuration"
 fi
