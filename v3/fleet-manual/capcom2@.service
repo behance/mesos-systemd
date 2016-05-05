@@ -19,19 +19,19 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
     --net='host' \
     --privileged \
     -e LOG_APP_NAME=capcom \
-    -e CP_APPLICATIONS=`etcdctl get /CP/CP_APPLICATIONS` \
+    -e CP_APPLICATIONS=$(etcdctl get /capcom/config/applications) \
     -e CP_HOST=`etcdctl get /CP/CP_HOST` \
-    -e CP_DB_PATH=`etcdctl get /CP/CP_DB_PATH` \
-    -e CP_KV_STORE_SERVER_ADDRESS=`etcdctl get /CP/CP_KV_STORE_SERVER_ADDRESS` \
-    -e CP_KV_TTL=`etcdctl get /CP/CP_KV_TTL` \
-    -e CP_LOG_LEVEL=`etcdctl get /CP/CP_LOG_LEVEL` \
-    -e CP_LOG_LOCATION=`etcdctl get /CP/CP_LOG_LOCATION` \
-    -e CP_PORT=$((`etcdctl get /CP/CP_PORT` + 1)) \
-    -e CP_PROXY=`etcdctl get /CP/CP_PROXY` \
-    -e CP_PROXY_CONFIG_FILE=`etcdctl get /CP/CP_PROXY_CONFIG_FILE` \
-    -e CP_PROXY_ENABLED=`etcdctl get /CP/CP_PROXY_ENABLED` \
-    -e CP_PROXY_RESTART_SCRIPT=`etcdctl get /CP/CP_PROXY_RESTART_SCRIPT` \
-    -e CP_PROXY_TIMEOUT=`etcdctl get /CP/CP_PROXY_TIMEOUT` \
+    -e CP_HOST=$(etcdctl get /capcom/config/host) \
+    -e CP_KV_STORE_SERVER_ADDRESS=$(etcdctl get /capcom/config/kv-store-server-address) \
+    -e CP_KV_TTL=$(etcdctl get /capcom/config/kv-ttl) \
+    -e CP_LOG_LEVEL=$(etcdctl get /capcom/config/log-level) \
+    -e CP_LOG_LOCATION=$(etcdctl get /capcom/config/log-location) \
+    -e CP_PORT=$(`etcdctl get /capcom/config/port` + 1) \
+    -e CP_PROXY=$(etcdctl get /capcom/config/proxy) \
+    -e CP_PROXY_CONFIG_FILE=$(etcdctl get /capcom/config/proxy-config-file) \
+    -e CP_PROXY_ENABLED=$(etcdctl get /capcom/config/proxy-enabled) \
+    -e CP_PROXY_RESTART_SCRIPT=$(etcdctl get /capcom/config/proxy-restart-script) \
+    -e CP_PROXY_TIMEOUT=$(etcdctl get /capcom/config/proxy-timeout) \
     $($IMAGE)"
 ExecStop=/usr/bin/docker stop capcom2
 

@@ -12,10 +12,10 @@ if [ "$(etcdctl get images-it-hybrid-bootstrapped)" == "true" ]; then
 fi
 etcdctl set images-it-hybrid-bootstrapped true
 
-etcdctl set /images/fd           "behance/flight-director:latest"
+etcdctl set /images/flight-director "behance/flight-director:latest"
 
-etcdctl set /images/capcom       "behance/capcom:latest"
+etcdctl set /images/capcom       	"behance/capcom:latest"
 
 
-docker pull $(etcdctl get /images/fd)
+docker pull $(etcdctl get /images/flight-director)
 docker pull $(etcdctl get /images/capcom)

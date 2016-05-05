@@ -6,7 +6,7 @@ After=docker.service chronos@%i.service marathon@%i.service
 Requires=docker.service
 
 [Service]
-Environment="IMAGE=etcdctl get /images/fd"
+Environment="IMAGE=etcdctl get /images/flight-director"
 User=core
 Restart=on-failure
 RestartSec=8
@@ -19,31 +19,31 @@ ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   --name flight-director \
   --net='host' \
   -e LOG_APP_NAME=flight-director \
-  -e FD_API_SERVER_PORT=`etcdctl get /FD/FD_API_SERVER_PORT` \
-  -e FD_CHRONOS_MASTER=`etcdctl get /FD/FD_CHRONOS_MASTER` \
-  -e FD_DB_DATABASE=`etcdctl get /FD/FD_DB_DATABASE` \
-  -e FD_DB_ENGINE=`etcdctl get /FD/FD_DB_ENGINE` \
-  -e FD_DB_PASSWORD=`etcdctl get /FD/FD_DB_PASSWORD` \
-  -e FD_DB_PATH=`etcdctl get /FD/FD_DB_PATH` \
-  -e FD_DB_USERNAME=`etcdctl get /FD/FD_DB_USERNAME` \
+  -e FD_API_SERVER_PORT=`etcdctl get /flight-director/config/api-server-port` \
+  -e FD_CHRONOS_MASTER=`etcdctl get /flight-director/config/chronos-master` \
+  -e FD_DB_DATABASE=`etcdctl get /flight-director/config/db-name` \
+  -e FD_DB_ENGINE=`etcdctl get /flight-director/config/db-engine` \
+  -e FD_DB_PASSWORD=`etcdctl get /environment/RDSPASSWORD` \
+  -e FD_DB_PATH=`etcdctl get /flight-director/config/db-path` \
+  -e FD_DB_USERNAME=`etcdctl get /flight-director/config/db-username` \
   -e FD_MARATHON_USER=`etcdctl get /marathon/username` \
   -e FD_MARATHON_PASSWORD=`etcdctl get /marathon/password` \
-  -e FD_DEBUG=`etcdctl get /FD/FD_DEBUG` \
-  -e FD_DOCKERCFG_LOCATION=`etcdctl get /FD/FD_DOCKERCFG_LOCATION` \
-  -e FD_EVENT_INTERFACE=`etcdctl get /FD/FD_EVENT_INTERFACE` \
-  -e FD_EVENT_PORT=`etcdctl get /FD/FD_EVENT_PORT` \
-  -e FD_FIXTURES=`etcdctl get /FD/FD_FIXTURES` \
-  -e FD_KV_SERVER=`etcdctl get /FD/FD_KV_SERVER` \
-  -e FD_LOG_LEVEL=`etcdctl get /FD/FD_LOG_LEVEL` \
-  -e FD_LOG_LOCATION=`etcdctl get /FD/FD_LOG_LOCATION` \
-  -e FD_LOG_MARATHON_API_CALLS=`etcdctl get /FD/FD_LOG_MARATHON_API_CALLS` \
-  -e FD_MARATHON_MASTER=`etcdctl get /FD/FD_MARATHON_MASTER` \
-  -e FD_MESOS_MASTER=`etcdctl get /FD/FD_MESOS_MASTER` \
-  -e AUTHORIZER_TYPE=`etcdctl get /FD/AUTHORIZER_TYPE` \
-  -e FD_AIRLOCK_PUBLIC_KEY=\"`etcdctl get /FD/FD_AIRLOCK_PUBLIC_KEY`\" \
-  -e FD_MARATHON_MASTER_PROTOCOL=`etcdctl get /FD/FD_MARATHON_MASTER_PROTOCOL` \
-  -e FD_MESOS_MASTER_PROTOCOL=`etcdctl get /FD/FD_MESOS_MASTER_PROTOCOL` \
-  -e FD_ALLOW_MARATHON_UNVERIFIED_TLS=`etcdctl get /FD/FD_ALLOW_MARATHON_UNVERIFIED_TLS` \
+  -e FD_DEBUG=`etcdctl get /flight-director/config/debug` \
+  -e FD_DOCKERCFG_LOCATION=`etcdctl get /flight-director/config/dockercfg-location` \
+  -e FD_EVENT_INTERFACE=`etcdctl get /flight-director/config/event-interface` \
+  -e FD_EVENT_PORT=`etcdctl get /flight-director/config/event-port` \
+  -e FD_FIXTURES=`etcdctl get /flight-director/config/fixtures` \
+  -e FD_KV_SERVER=`etcdctl get /flight-director/config/kv-server` \
+  -e FD_LOG_LEVEL=`etcdctl get /flight-director/config/log-level` \
+  -e FD_LOG_LOCATION=`etcdctl get /flight-director/config/log-location` \
+  -e FD_LOG_MARATHON_API_CALLS=`etcdctl get /flight-director/config/log-marathon-api-calls` \
+  -e FD_MARATHON_MASTER=`etcdctl get /flight-director/config/marathon-master` \
+  -e FD_MESOS_MASTER=`etcdctl get /flight-director/config/mesos-master` \
+  -e AUTHORIZER_TYPE=`etcdctl get /flight-director/config/authorizer-type` \
+  -e FD_AIRLOCK_PUBLIC_KEY=\"`etcdctl get /flight-director/config/airlock-public-key`\" \
+  -e FD_MARATHON_MASTER_PROTOCOL=`etcdctl get /flight-director/config/marathon-master-protocol` \
+  -e FD_MESOS_MASTER_PROTOCOL=`etcdctl get /flight-director/config/mesos-master-protocol` \
+  -e FD_ALLOW_MARATHON_UNVERIFIED_TLS=`etcdctl get /flight-director/config/allow-marathon-unverified-tls` \
   $($IMAGE)"
 
 ExecStop=-/usr/bin/docker stop flight-director

@@ -1,66 +1,60 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -x
 
-echo "-------Beginning bootstrap script-------"
+# BEGINNING BOOTSTRAP SCRIPT
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HOMEDIR=$(eval echo "~`whoami`")
+source /etc/environment || :
 
+# determine version
 if [ -z "$1" ]; then
   VERSION="v2"
 else
   VERSION="$1"
 fi
 
-echo "Using version: $VERSION"
-
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-HOMEDIR=$(eval echo "~`whoami`")
-
-if [[ "$VERSION" = "v2" ]]; then
-  bash ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh
-fi
-
-if [ -f /etc/environment ]; then
-    source /etc/environment
-fi
-
+# Control tier - must form an etcd2 cluster first
 if [ "$NODE_ROLE" = "control" ]; then
-  sudo bash ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
+  sudo ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
 fi
-
 if [ "$NODE_ROLE" = "it-hybrid" ]; then
-  sudo bash ${SCRIPTDIR}/itv1/util/etcd2-setup.sh $SCRIPTDIR
+  sudo ${SCRIPTDIR}/itv1/util/etcd2-setup.sh $SCRIPTDIR
 fi
 
-# 4 == 404 - key not found
-etcdctl get /environment/SCRIPTS-FORK
-if [[ $? = 4 ]]; then
-  etcdctl set /environment/SCRIPTS-FORK adobe-platform
-  etcdctl set /environment/SCRIPTS-REV  $(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
-fi
+# run appropriate setup-credentials script
+# must happen after etcd2 peers so that etcdctl can actually be used
+${SCRIPTDIR}/$VERSION/util/setup-credentials.sh || :
 
-if [ ! -d /etc/profile.d ]; then
-    sudo mkdir /etc/profile.d
-fi
-# copy over files first, ignore errors thrown from directories
+# SETUP profile.d
+sudo mkdir /etc/profile.d || :
 sudo cp ${SCRIPTDIR}/$VERSION/profile.d/* /etc/profile.d/. 2>/dev/null || :
-
 sudo cp --dereference ${SCRIPTDIR}/$VERSION/profile.d/${NODE_ROLE}/* /etc/profile.d/.
 
+# SETUP SCRIPTS
 for script in $(ls ${SCRIPTDIR}/$VERSION/setup|grep -e '.sh$')
 do
-    sudo /bin/bash ${SCRIPTDIR}/$VERSION/setup/${script}
+    sudo ${SCRIPTDIR}/$VERSION/setup/${script}
 done
 
-# This must be after setup scripts are run so that defaults don't overwrite custom-provided etcd vals
-if [[ "$VERSION" = "v3" ]]; then
-  bash ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh
+# ETCD OVERRIDES
+# This must be after setup scripts are run so that defaults don't overwrite
+# custom-provided etcd vals
+${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
+etcdctl get /environment/SCRIPTS-FORK
+if [[ $? = 4 ]]; then
+  # 4 == 404 - key not found
+  # case where a node is joining a pre-existing cluster
+  SCRIPTS_REV=$(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
+  etcdctl set /environment/SCRIPTS-FORK adobe-platform
+  etcdctl set /environment/SCRIPTS-REV  $SCRIPTS_REV
 fi
 
-# fleet units specific to this node
+# FLEET UNITS SPECIFIC TO THIS NODE
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}|grep -e '.service$')
 do
     sudo fleetctl submit "${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}/${unit}"
     sudo fleetctl start "${unit%.service}${COREOS_PRIVATE_IPV4}"
 done
-# general-purpose units
+# GENERAL-PURPOSE UNITS
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet|grep -e '.service$\|.timer$')
 do
     sudo fleetctl submit ${SCRIPTDIR}/$VERSION/fleet/${unit}
