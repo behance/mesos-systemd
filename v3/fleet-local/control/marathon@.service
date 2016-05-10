@@ -6,9 +6,9 @@ After=docker.service bootstrap.service zk-health.service mesos-master@%i.service
 [Service]
 Environment=ZOOKEEPER=localhost:2181
 Environment="IMAGE=etcdctl get /images/marathon"
-Environment="USER=etcdctl get /marathon/username"
-Environment="PASSWORD=etcdctl get /marathon/password"
-Environment="MESOS_USERNAME=etcdctl get /frameworkauth/username"
+Environment="USER=etcdctl get /marathon/config/username"
+Environment="PASSWORD=etcdctl get /marathon/config/password"
+Environment="MESOS_USERNAME=etcdctl get /mesos/config/username"
 Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
 Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
 Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
@@ -21,19 +21,19 @@ TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active update-os.service
 ExecStartPre=/usr/bin/systemctl is-active zk-health.service
 ExecStartPre=/usr/bin/systemctl is-active mesos-master@*
+ExecStartPre=/usr/bin/bash -c "if [ ! -f /opt/mesos/framework-secret ]; then exit 1; fi"
 ExecStartPre=/usr/bin/sh -c "docker pull $($IMAGE)"
 ExecStartPre=-/usr/bin/docker kill marathon
 ExecStartPre=-/usr/bin/docker rm marathon
-ExecStartPre=/usr/bin/bash /home/core/mesos-systemd/v3/util/credential-framework.sh
 
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   --name marathon \
   -e LIBPROCESS_PORT=9090 \
   --net=host \
-  -v /home/core/mesos-framework/passwd:/opt/mesos/credentials \
+  -v /opt/mesos/framework-secret:/opt/mesos/framework-secret:ro \
   $($IMAGE) \
   --mesos_authentication_principal $($MESOS_USERNAME) \
-  --mesos_authentication_secret_file /opt/mesos/credentials \
+  --mesos_authentication_secret_file /opt/mesos/framework-secret \
   --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/mesos \
   --zk zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/marathon \
   --http_credentials $($USER):$($PASSWORD) \

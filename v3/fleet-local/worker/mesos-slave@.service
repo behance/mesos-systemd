@@ -19,10 +19,10 @@ ExecStartPre=/usr/bin/systemctl is-active update-os.service
 # condition / assertion options here for some reason do not prevent the
 # ExecStart from spinning up and mounting / creating .dockercfg/ as a dir
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /home/core/.dockercfg ]; then exit 1; fi"
+ExecStartPre=/usr/bin/bash -c "if [ ! -f /opt/mesos/credentials ]; then exit 1; fi"
 ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $($IMAGE)"
 ExecStartPre=-/usr/bin/docker kill mesos-slave
 ExecStartPre=-/usr/bin/docker rm mesos-slave
-ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && /usr/bin/bash /home/core/mesos-systemd/v3/util/credential-slave.sh"
 
 ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
   sudo docker run \
@@ -38,7 +38,7 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
     -v /lib64/libsystemd.so:/lib/libsystemd.so.0:ro \
     -v /lib64/libgcrypt.so:/lib/libgcrypt.so.20:ro \
     -v /var/lib/mesos/slave:/var/lib/mesos/slave \
-    -v /home/core/mesos-slave/passwd:/opt/mesos/credentials \
+    -v /opt/mesos/credentials:/opt/mesos/credentials:ro \
     $($IMAGE) \
     --ip=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) \
     --attributes=zone:$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\;os:coreos\;worker_group:$WORKER_GROUP \

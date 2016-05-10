@@ -23,8 +23,8 @@ sudo /usr/bin/docker run --name sumologic-journald \
 -e SUMO_NAME=${NODE_PRODUCT}-${NODE_TIER}-cluster \
 -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/${NODE_ROLE}/journald-logs \
 -e SUMO_COLLECTOR_NAME=mesos_journald_collector \
--e SUMO_ACCESS_ID=`etcdctl get /sumologic_id` \
--e SUMO_ACCESS_KEY=`etcdctl get /sumologic_secret` \
+-e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
+-e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
 behance/docker-sumologic:syslog-latest"
 ExecStop=/usr/bin/docker stop sumologic-journald
 

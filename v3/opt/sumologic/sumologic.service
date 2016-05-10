@@ -1,5 +1,5 @@
 [Unit]
-Description=Sumologic Control and Proxy Tier Collector
+Description=Sumologic Collector
 After=docker.service bootstrap.service
 
 [Service]
@@ -9,22 +9,21 @@ Restart=always
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
 ExecStartPre=/usr/bin/docker pull behance/docker-sumologic
-ExecStartPre=-/usr/bin/docker kill sumologic-control
-ExecStartPre=-/usr/bin/docker rm -f sumologic-control
+ExecStartPre=-/usr/bin/docker kill sumologic
+ExecStartPre=-/usr/bin/docker rm -f sumologic
 ExecStart=/usr/bin/bash -c \
     "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && \
-    sudo /usr/bin/docker run --name sumologic-control \
+    sudo /usr/bin/docker run --name sumologic \
     --hostname=$COREOS_PRIVATE_IPV4 \
     -v /var/lib/docker/containers/:/tmp/clogs/:ro \
     -e SUMO_NAME=docker_cluster \
-    -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/control-logs \
+    -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/container-logs \
     -e SUMO_COLLECTOR_NAME=mesos_app_collector \
-    -e SUMO_ACCESS_ID=`etcdctl get /sumologic_id` \
-    -e SUMO_ACCESS_KEY=`etcdctl get /sumologic_secret` \
+    -e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
+    -e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
     behance/docker-sumologic"
-ExecStop=/usr/bin/docker stop sumologic-control
+ExecStop=/usr/bin/docker stop sumologic
 
 [X-Fleet]
 Global=true
-MachineMetadata=role=control
-MachineMetadata=role=proxy
+MachineMetadata=role=worker

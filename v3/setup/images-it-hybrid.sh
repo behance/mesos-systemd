@@ -6,14 +6,13 @@ if [ "${NODE_ROLE}" != "it-hybrid" ]; then
     exit 0
 fi
 
-if [ "$(etcdctl get images-it-hybrid-bootstrapped)" == "true" ]; then
+if [ "$(etcdctl get /bootstrap.service/images-it-hybrid-bootstrapped)" == "true" ]; then
     echo "it-hybrid-tier images already bootstrapped, skipping"
     exit 0
 fi
-etcdctl set images-it-hybrid-bootstrapped true
+etcdctl set /bootstrap.service/images-it-hybrid-bootstrapped true
 
 etcdctl set /images/flight-director "behance/flight-director:latest"
-
 etcdctl set /images/capcom       	"behance/capcom:latest"
 
 

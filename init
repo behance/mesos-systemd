@@ -20,6 +20,12 @@ if [ "$NODE_ROLE" = "it-hybrid" ]; then
   sudo ${SCRIPTDIR}/itv1/util/etcd2-setup.sh $SCRIPTDIR
 fi
 
+# Worker tier - must run the IAM proxy setup before any other containers
+# Version v2 of util scripts does not have this file
+if [[ "$NODE_ROLE" = "worker" && -f ${SCRIPTDIR}/$VERSION/util/iam-proxy.sh ]]; then
+  sudo ${SCRIPTDIR}/$VERSION/util/iam-proxy.sh $SCRIPTDIR
+fi
+
 # run appropriate setup-credentials script
 # must happen after etcd2 peers so that etcdctl can actually be used
 ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh || :
@@ -45,8 +51,27 @@ if [[ $? = 4 ]]; then
   # case where a node is joining a pre-existing cluster
   SCRIPTS_REV=$(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
   etcdctl set /environment/SCRIPTS-FORK adobe-platform
-  etcdctl set /environment/SCRIPTS-REV  $SCRIPTS_REV
+  etcdctl set /environment/SCRIPTS-SHA  $SCRIPTS_REV
 fi
+
+# start services specified in $(etcdctl get /environment/services)
+# mapped to the /opt directory of these scripts
+etcdctl get /environment/services
+if [[ $? = 4 ]]; then
+  etcdctl set /environment/services "sumologic datadog"
+fi
+for service in $(etcdctl get /environment/services)
+do
+    servicedir=${SCRIPTDIR}/${VERSION}/opt/${service}
+    if [[ ! -d $servicedir ]]; then
+        continue
+    fi
+    for unit in $(ls $servicedir|grep -e '.service$\|.timer$')
+    do
+        sudo fleetctl submit $servicedir/$unit
+        sudo fleetctl start $unit
+    done
+done
 
 # FLEET UNITS SPECIFIC TO THIS NODE
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}|grep -e '.service$')

@@ -8,11 +8,11 @@ fi
 
 export ETCDCTL_PEERS="http://$ETCDCTL_PEERS_ENDPOINT"
 
-if [ "$(etcdctl get images-proxy-bootstrapped)" == "true" ]; then
+if [ "$(etcdctl get /bootstrap.service/images-proxy-bootstrapped)" == "true" ]; then
     echo "proxy-tier images already bootstrapped, skipping"
     exit 0
 fi
-etcdctl set images-proxy-bootstrapped true
+etcdctl set /bootstrap.service/images-proxy-bootstrapped true
 
 etcdctl set /images/capcom       "behance/capcom:latest"
 etcdctl set /images/capcom2      "behance/capcom:latest"
