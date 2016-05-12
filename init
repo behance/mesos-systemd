@@ -13,7 +13,7 @@ else
 fi
 
 # Control tier - must form an etcd2 cluster first
-if [ "$NODE_ROLE" = "control" ]; then
+if [ "$NODE_ROLE" = "control" -o "$NODE_ROLE" = "bastion"]; then
   sudo ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
 fi
 if [ "$NODE_ROLE" = "it-hybrid" ]; then
