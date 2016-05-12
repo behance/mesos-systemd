@@ -22,7 +22,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name proxy \
     --net='host' \
-    -m 12G \
+    -m 2G \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     -v /home/core/ssl:/etc/$($PROXY)/ssl \
     $($IMAGE)"
