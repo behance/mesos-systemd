@@ -45,6 +45,10 @@ done
 # This must be after setup scripts are run so that defaults don't overwrite
 # custom-provided etcd vals
 ${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
+
+# The mesos-credentials.sh script must run after seed-etcd.sh
+sudo ${SCRIPTDIR}/$VERSION/util/mesos-credentials.sh || :
+
 etcdctl get /environment/SCRIPTS-FORK
 if [[ $? = 4 ]]; then
   # 4 == 404 - key not found

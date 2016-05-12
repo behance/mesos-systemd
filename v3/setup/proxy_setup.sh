@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [ "$NODE_ROLE" != "proxy" ]; then
     exit 0

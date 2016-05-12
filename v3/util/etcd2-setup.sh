@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # NOTE: this needs to be run with sudo privileges
 # $1 must be the SCRIPTDIR

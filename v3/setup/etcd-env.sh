@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 ENV_FILE="/etc/environment"
 ETCD_PREFIX="/environment"
