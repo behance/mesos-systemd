@@ -9,7 +9,7 @@ User=core
 Restart=always
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-sumologic
+ExecStartPre=/usr/bin/docker pull behance/sumo-test
 ExecStartPre=-/usr/bin/docker kill sumologic
 ExecStartPre=-/usr/bin/docker rm -f sumologic
 ExecStart=/usr/bin/bash -c \
@@ -23,7 +23,7 @@ ExecStart=/usr/bin/bash -c \
     -e SUMO_HOSTNAME=$($IP) \
     -e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
     -e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
-    behance/docker-sumologic"
+    behance/sumo-test"
 ExecStop=/usr/bin/docker stop sumologic
 
 [X-Fleet]

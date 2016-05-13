@@ -11,7 +11,7 @@ User=core
 Restart=always
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-sumologic:syslog-latest
+ExecStartPre=/usr/bin/docker pull behance/sumo-test:syslog
 ExecStartPre=-/usr/bin/docker kill sumologic-journald
 ExecStartPre=-/usr/bin/docker rm -f sumologic-journald
 ExecStart=/usr/bin/bash -c \
@@ -27,7 +27,7 @@ sudo /usr/bin/docker run --name sumologic-journald \
 -e SUMO_HOSTNAME=$($IP) \
 -e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
 -e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
-behance/docker-sumologic:syslog-latest"
+behance/sumo-test:syslog"
 ExecStop=/usr/bin/docker stop sumologic-journald
 
 [X-Fleet]
