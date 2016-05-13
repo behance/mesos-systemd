@@ -10,18 +10,6 @@ docker rmi $(docker images -aq) 2> /dev/null
 
 # play on https://github.com/docker/docker/issues/6354#issuecomment-114688663
 FSDRIVER=$(docker info|grep Storage|cut -d: -f2|tr -d [:space:])
-FSLOC=/var/lib/docker/${FSDRIVER}
-cd $FSLOC
-echo "Starting image cleaning for driver:$FSDRIVER in $FSLOC"
-for image in $(ls|grep -v -- '-init'|cut -f2); do
-    docker inspect $image > /dev/null
-    if [ $? == 0 ]; then
-        echo "--> skipping $image"
-        continue
-    fi
-    echo "--> removing $image"
-    rm -r $image;
-done
 
 echo "---- Complete ----"
 sudo free -h
