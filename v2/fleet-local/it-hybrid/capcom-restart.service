@@ -1,0 +1,17 @@
+# Temporary service to restart capcom so it doesn't fail to reload nginx config due to memory consumption.
+# Remove when memory leak is fixed.
+
+[Unit]
+Description=Capcom Restart
+After=docker.service
+Requires=docker.service
+
+[Service]
+User=core
+RestartSec=20
+TimeoutStartSec=0
+ExecStart=/usr/bin/sudo docker stop capcom
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=it-hybrid

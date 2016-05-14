@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 source /etc/environment
 if [ "${NODE_ROLE}" != "control" ] && [ "${NODE_ROLE}" != "worker"]; then

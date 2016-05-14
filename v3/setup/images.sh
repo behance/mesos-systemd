@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [ "$(etcdctl get /bootstrap.service/images-base-bootstrapped)" == "true" ]; then
     echo "base images already bootstrapped, skipping"

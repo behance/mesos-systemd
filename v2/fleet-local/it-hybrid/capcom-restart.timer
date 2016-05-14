@@ -1,0 +1,21 @@
+# Temporary timer to restart capcom periodically so it doesn't fail to reload nginx config due to memory consumption.
+# Remove when memory leak is fixed.
+
+[Unit]
+Description=CAPCOM Restart
+After=docker.service
+Requires=docker.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Timer]
+User=core
+# run 10 minutes after boot
+OnBootSec=10min
+# run every hour
+OnUnitActiveSec=1h
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=it-hybrid
