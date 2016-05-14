@@ -5,6 +5,7 @@
 echo "Removing dead containers & volumes"
 docker rm -v $(docker ps -a|grep Exited|cut -d" " -f1)  #2> /dev/null
 
+docker images | grep none | awk '{print $3}' | xargs -n 1 -IXX docker rmi XX
 #echo "Removing images"
 #docker rmi $(docker images -aq) 2> /dev/null
 
