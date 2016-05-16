@@ -12,7 +12,7 @@ else
   VERSION="$1"
 fi
 
-# Control tier - must form an etcd2 cluster first
+# Control and Bastion tiers - must form an etcd2 cluster first
 if [ "$NODE_ROLE" = "control" ] || [ "$NODE_ROLE" = "bastion" ]; then
   sudo ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
 fi
@@ -45,6 +45,9 @@ done
 # This must be after setup scripts are run so that defaults don't overwrite
 # custom-provided etcd vals
 ${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
+
+# The klam-ssh.sh script must run after seed-etcd.sh
+sudo ${SCRIPTDIR}/$VERSION/util/klam-ssh.sh || :
 
 # The mesos-credentials.sh script must run after seed-etcd.sh
 sudo ${SCRIPTDIR}/$VERSION/util/mesos-credentials.sh || :
