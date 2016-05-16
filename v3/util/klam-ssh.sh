@@ -90,7 +90,7 @@ useradd -p "*" -U -G sudo -u 5000 -m klamfed -s /bin/bash
 mkdir -p /home/klamfed
 usermod -p "*" klamfed
 usermod -U klamfed
-update-ssh-keys -u klamfed
+update-ssh-keys -u klamfed || :
 
 # Add klamfed to wheel
 usermod -a -G wheel klamfed
