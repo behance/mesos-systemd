@@ -46,11 +46,11 @@ done
 # custom-provided etcd vals
 ${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
 
-# The klam-ssh.sh script must run after seed-etcd.sh
-sudo ${SCRIPTDIR}/$VERSION/util/klam-ssh.sh || :
-
 # The mesos-credentials.sh script must run after seed-etcd.sh
 sudo ${SCRIPTDIR}/$VERSION/util/mesos-credentials.sh || :
+
+# The klam-ssh.sh script must run after seed-etcd.sh
+sudo ${SCRIPTDIR}/$VERSION/util/klam-ssh.sh || :
 
 etcdctl get /environment/SCRIPTS-FORK
 if [[ $? = 4 ]]; then
