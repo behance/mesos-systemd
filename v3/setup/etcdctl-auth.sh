@@ -1,6 +1,4 @@
-#!/bin/bash
-
-source /etc/environment
+#!/bin/bash -x
 
 etcdctl set /etcdctl/config/root-user root
 etcdctl set /etcdctl/config/read-user read-user
@@ -17,6 +15,8 @@ CRED_DIR="/opt/etcdctl"
 if [[ ! -d $CRED_DIR ]]; then
     sudo mkdir $CRED_DIR -p
 fi
+
+sudo chown -R $(whoami):$(whoami) $CRED_DIR
 
 # add root-user
 sudo echo '{"user":"'${ROOT_USERNAME}'", "password":"'${ROOT_PASSWORD}'"}' > $CRED_DIR/root-user.json
@@ -49,5 +49,4 @@ curl -L http://127.0.0.1:2379/v2/auth/users/${WRITE_USERNAME} -XPUT -d "@$CRED_D
 # Enable authentication
 curl -L http://127.0.0.1:2379/v2/auth/enable -XPUT
 
-sudo chmod 0600 $CRED_DIR/*
-sudo chown -R $(whoami):$(whoami) $CRED_DIR
+sudo rm -rf $CRED_DIR
