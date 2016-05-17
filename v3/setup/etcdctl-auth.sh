@@ -18,16 +18,32 @@ fi
 
 sudo chown -R $(whoami):$(whoami) $CRED_DIR
 
+# Add user function
+
+function add_users (){
+
+sudo cat << EOF > $CRED_DIR/${1}.json
+{
+  "user": "$1",
+  "password": "$2"
+}
+EOF
+}
+
+add_users $ROOT_USERNAME $ROOT_PASSWORD
+add_users $READ_USERNAME $READ_PASSWORD
+add_users $WRITE_USERNAME $WRITE_PASSWORD
+
 # add root-user
-sudo echo '{"user":"'${ROOT_USERNAME}'", "password":"'${ROOT_PASSWORD}'"}' > $CRED_DIR/root-user.json
+#sudo echo '{"user":"'${ROOT_USERNAME}'", "password":"'${ROOT_PASSWORD}'"}' > $CRED_DIR/root-user.json
 curl -L http://127.0.0.1:2379/v2/auth/users/${ROOT_USERNAME} -XPUT -d "@$CRED_DIR/root-user.json"
 
 # add read-user
-sudo echo '{"user":"'${READ_USERNAME}'", "password":"'${READ_PASSWORD}'"}' > $CRED_DIR/read-user.json
+#sudo echo '{"user":"'${READ_USERNAME}'", "password":"'${READ_PASSWORD}'"}' > $CRED_DIR/read-user.json
 curl -L http://127.0.0.1:2379/v2/auth/users/${READ_USERNAME} -XPUT -d "@$CRED_DIR/read-user.json"
 
 # add write-user
-sudo echo '{"user":"'${WRITE_USERNAME}'", "password":"'${WRITE_PASSWORD}'"}' > $CRED_DIR/write-user.json
+#sudo echo '{"user":"'${WRITE_USERNAME}'", "password":"'${WRITE_PASSWORD}'"}' > $CRED_DIR/write-user.json
 curl -L http://127.0.0.1:2379/v2/auth/users/${WRITE_USERNAME} -XPUT -d "@$CRED_DIR/write-user.json"
 
 # read access
