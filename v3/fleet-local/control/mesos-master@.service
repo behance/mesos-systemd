@@ -36,7 +36,7 @@ ExecStart=/usr/bin/bash -c "sudo docker run \
   --cluster=$NODE_PRODUCT-$NODE_TIER \
   --hostname=$(curl -s http://169.254.169.254/latest/meta-data/local-hostname) \
   --log_dir=/var/log/mesos \
-  --quorum=3 \
+  --quorum=$((($CONTROL_CLUSTER_SIZE+1)/2)) \
   --work_dir=/var/lib/mesos/master \
   --zk=zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/mesos"
 
