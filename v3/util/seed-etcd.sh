@@ -11,7 +11,7 @@ if [[ "${NODE_ROLE}" = "worker" && ! -z "$CONTAINERS_ROLE" ]]; then
     IAM_ROLE_LABEL=' --label com.swipely.iam-docker.iam-profile='"$CONTAINERS_ROLE"' '    
 fi
 
-DL_TABLE="sudo docker run --rm $IAM_ROLE_LABEL behance/docker-aws-secrets-downloader --table $SECRETS_TABLE"
+DL_TABLE="sudo docker run --rm --log-opt max-size=10m --log-opt max-file=10 $IAM_ROLE_LABEL behance/docker-aws-secrets-downloader --table $SECRETS_TABLE"
 # Get all available secrets and configs
 AV_SECRETS=$($DL_TABLE --key secrets)
 AV_CONFIGS=$($DL_TABLE --key configs)

@@ -27,6 +27,7 @@ ExecStart=/usr/bin/bash -c "sudo docker run \
   --name=mesos-master \
   --privileged \
   --net=host \
+  --log-opt max-size=10m --log-opt max-file=10  \
   -v /var/lib/mesos/master:/var/lib/mesos/master \
   -v /opt/mesos/credentials:/opt/mesos/credentials:ro \
   $($IMAGE) \
