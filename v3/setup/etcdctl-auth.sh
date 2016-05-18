@@ -63,6 +63,7 @@ sudo echo '{"user": "'${WRITE_USERNAME}'", "grant": ["read-write"]}' > $CRED_DIR
 curl -L http://127.0.0.1:2379/v2/auth/users/${WRITE_USERNAME} -XPUT -d "@$CRED_DIR/read-write.json"
 
 # Enable authentication
-curl -L http://127.0.0.1:2379/v2/auth/enable -XPUT
+#curl -L http://127.0.0.1:2379/v2/auth/enable -XPUT
+etcdctl auth enable
 
 sudo rm -rf $CRED_DIR
