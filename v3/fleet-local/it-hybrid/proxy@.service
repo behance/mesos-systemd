@@ -22,6 +22,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name proxy \
     --net='host' \
+    --log-opt max-size=10m --log-opt max-file=10  \
     -m 12G \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     -v /home/core/ssl:/etc/$($PROXY)/ssl \

@@ -30,6 +30,7 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
     --net=host \
     --pid=host \
     --privileged \
+    --log-opt max-size=20m --log-opt max-file=10 \
     -v /home/core/.dockercfg:/root/.dockercfg:ro \
     -v /sys:/sys \
     -v /usr/bin/docker:/usr/bin/docker:ro \

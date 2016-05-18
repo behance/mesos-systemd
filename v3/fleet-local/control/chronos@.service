@@ -29,6 +29,7 @@ ExecStartPre=-/usr/bin/docker rm chronos
 ExecStart=/usr/bin/sh -c "docker run \
   --name chronos \
   --net=host \
+  --log-opt max-size=10m --log-opt max-file=10  \
   -v /opt/mesos/framework-secret:/opt/mesos/framework-secret:ro \
   --env LIBPROCESS_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) \
   --env LIBPROCESS_PORT=4401 \

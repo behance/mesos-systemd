@@ -19,6 +19,7 @@ ExecStart=/bin/bash -c \
     docker run \
     --label com.swipely.iam-docker.iam-profile="$CONTAINERS_ROLE" \
     --name ecr-login \
+    --log-opt max-size=10m --log-opt max-file=10  \
     -e "TEMPLATE=templates/dockercfg.tmpl" \
     -e "AWS_REGION=`etcdctl get /ECR/config/region`" \
     -e "REGISTRIES=`etcdctl get /ECR/config/registry-account`" \

@@ -18,6 +18,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
     --name capcom2 \
     --net='host' \
     --privileged \
+    --log-opt max-size=10m --log-opt max-file=10  \
     -e LOG_APP_NAME=capcom \
     -e CP_APPLICATIONS=$(etcdctl get /capcom/config/applications) \
     -e CP_HOST=`etcdctl get /CP/CP_HOST` \

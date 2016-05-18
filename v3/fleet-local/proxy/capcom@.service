@@ -23,6 +23,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
     --name capcom \
     --net='host' \
     --privileged \
+    --log-opt max-size=10m --log-opt max-file=10 \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e LOG_APP_NAME=capcom \

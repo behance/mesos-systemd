@@ -24,6 +24,7 @@ ExecStart=/usr/bin/bash -c "sudo docker run \
   -p 2181:2181 \
   -p 2888:2888 \
   -p 3888:3888 \
+  --log-opt max-size=10m --log-opt max-file=10  \
   -v /opt/zookeeper/transactions:/opt/zookeeper/transactions \
   -v /opt/zookeeper/snapshots:/opt/zookeeper/snapshots \
   -e S3_PREFIX=$(etcdctl get /zookeeper/config/exhibitor/s3-prefix) \
