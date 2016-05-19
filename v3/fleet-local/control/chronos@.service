@@ -32,6 +32,7 @@ ExecStart=/usr/bin/sh -c "docker run \
   -v /opt/mesos/framework-secret:/opt/mesos/framework-secret:ro \
   --env LIBPROCESS_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) \
   --env LIBPROCESS_PORT=4401 \
+  --security-opt=no-new-privileges \
   $($IMAGE) \
   /usr/bin/chronos \
   run_jar \
