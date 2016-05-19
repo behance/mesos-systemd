@@ -56,10 +56,18 @@ etcdctl get /environment/SCRIPTS-FORK
 if [[ $? = 4 ]]; then
   # 4 == 404 - key not found
   # case where a node is joining a pre-existing cluster
-  SCRIPTS_REV=$(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
+  SCRIPTS_REV=$(cd $SCRIPTDIR && git rev-parse HEAD)
   etcdctl set /environment/SCRIPTS-FORK adobe-platform
   etcdctl set /environment/SCRIPTS-SHA  $SCRIPTS_REV
 fi
+
+# CURRENT_REV=$(cd $SCRIPTDIR && git rev-parse HEAD)
+# CLUSTER_REV=$(etcdctl get /environment/SCRIPTS-SHA)
+# if [[ "$CLUSTER_REV" != "$CURRENT_REV" ]]; then
+#   cd $SCRIPTDIR && git reset --hard && git checkout $CLUSTER_REV
+#   $SCRIPTDIR/init $1
+#   exit 0
+# fi
 
 # start services specified in $(etcdctl get /environment/services)
 # mapped to the /opt directory of these scripts
