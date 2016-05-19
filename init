@@ -82,7 +82,6 @@ do
     do
         sudo fleetctl submit $servicedir/$unit
         sudo fleetctl start $unit
-        sleep 10
     done
 done
 
