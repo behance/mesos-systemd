@@ -1,0 +1,34 @@
+[Unit]
+Description=Booster Metrics Collector @ %i
+Requires=docker.service
+After=docker.service flight-director@i.service
+
+[Service]
+User=core
+Restart=on-failure
+
+ExecStartPre=/usr/bin/sh -c "/usr/bin/docker pull $(etcdctl get /images/booster/metrics-producer)"
+ExecStartPre=-/usr/bin/docker kill booster
+ExecStartPre=-/usr/bin/docker rm booster
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+  --name booster \
+  --net=host \
+  -e AWS_DEFAULT_REGION=us-east-1 \
+  -e BOOSTER_DISABLE_CLOUDWATCH_FETCH=False \
+  -e BOOSTER_CLOUDWATCH_FREQUENCY=5 \
+  -e BOOSTER_FLIGHTDIRECTOR_APP_STATS_URL=http://`etcdctl get /environment/CONTROL_ELB`:7070/v1/about/app-stats \
+  -e BOOSTER_CLOUDWATCH_VERBOSE=True \
+  -e BOOSTER_HEALTHCHECK_PORT=8888 \
+  -e BOOSTER_VERIFY_SSL=False \
+  -e BOOSTER_REQUEST_TIMEOUT=4 \
+  -e BOOSTER_ENABLE_CONTAINER_METRICS=True \
+  -e STACK_NAME=`etcdctl get /environment/STACK_NAME` \
+  `etcdctl get /images/booster/metrics-producer`"
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=false
+MachineMetadata=role=control
+MachineMetadata=ip=%i
