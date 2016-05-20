@@ -15,5 +15,9 @@ echo "Driver $FSDRIVER"
 echo "---- Complete ----"
 
 sudo free -h
-sudo lvdisplay
+if [ "$FSDRIVER" = "devicemapper" ]; then
+    sudo lvdisplay
+else
+    sudo df -Th
+fi
 
