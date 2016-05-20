@@ -18,6 +18,8 @@ ExecStart=/usr/bin/bash -c \
 "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && sudo /usr/bin/docker run --name dd-agent-mesos -h `hostname` \
 -e API_KEY=`etcdctl get /datadog/config/api-key` \
 -e MESOS_HOST=`etcdctl get /environment/CONTROL_ELB` \
+-e MARATHON_USERNAME=`etcdctl get /marathon/config/username` \
+-e MARATHON_PASSWORD=`etcdctl get /marathon/config/password` \
 behance/docker-dd-agent-mesos"
 ExecStop=/usr/bin/docker stop dd-agent-mesos
 
