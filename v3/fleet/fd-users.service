@@ -1,0 +1,18 @@
+[Unit]
+Description=Create application users based on flight-director keys
+After=etcd2.service
+
+[Service]
+User=core
+Restart=always
+TimeoutStartSec=0
+RestartSec=10
+
+ExecStart=/home/core/mesos-systemd/v2/util/fd-users.sh
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=worker
