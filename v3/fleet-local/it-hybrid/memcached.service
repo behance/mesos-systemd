@@ -18,6 +18,7 @@ ExecStartPre=-/usr/bin/docker rm memcached
 ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name memcached \
+    --log-opt max-size=10m --log-opt max-file=10 \
     borja/docker-memcached"
 
 ExecStop=-/usr/bin/docker stop memcached

@@ -22,7 +22,9 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name proxy \
     --net='host' \
+    --log-opt max-size=10m --log-opt max-file=10  \
     -m $(($(grep MemTotal /proc/meminfo | awk '{print $2}')*3/4/1024))M \
+    --log-opt max-size=10m --log-opt max-file=10  \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     $($IMAGE)"
 

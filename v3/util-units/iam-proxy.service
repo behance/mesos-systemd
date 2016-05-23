@@ -17,6 +17,7 @@ ExecStartPre=-/usr/bin/docker rm -f iam-proxy
 
 ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
   --name=iam-proxy \
+  --log-opt max-size=10m --log-opt max-file=10 \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --restart=always \
   --net=host \
