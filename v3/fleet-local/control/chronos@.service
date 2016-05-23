@@ -7,11 +7,12 @@ Requires=docker.service
 [Service]
 # NOTE: chronos doesn't need the `zk://`
 Environment=ZOOKEEPER_HOST=localhost:2181
-Environment="IMAGE=etcdctl get /images/chronos"
-Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
-Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
-Environment="MESOS_USERNAME=etcdctl get /mesos/config/username"
+Environment=ETCD_AUTH="`echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'`:`echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//'`"
+Environment="IMAGE=etcdctl -u $ETCD_AUTH get /images/chronos"
+Environment="ZK_USERNAME=etcdctl -u $ETCD_AUTH get /zookeeper/config/username"
+Environment="ZK_PASSWORD=etcdctl -u $ETCD_AUTH get /zookeeper/config/password"
+Environment="ZK_ENDPOINT=etcdctl -u $ETCD_AUTH get /zookeeper/config/endpoint"
+Environment="MESOS_USERNAME=etcdctl -u $ETCD_AUTH get /mesos/config/username"
 
 User=core
 Restart=always

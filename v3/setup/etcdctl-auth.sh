@@ -62,4 +62,4 @@ curl -L http://127.0.0.1:2379/v2/auth/users/${WRITE_USERNAME} -XPUT -d "@$CRED_D
 # Enable authentication
 etcdctl auth enable
 
-sudo rm -rf $CRED_DIR
+sudo rm -rf $CRED_DIR/read-user.json $CRED_DIR/root.json
