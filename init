@@ -89,15 +89,19 @@ function submit-fleet-unit() {
     sudo fleetctl submit $@
     while [ $? != 0 ]; do sleep 1; sudo fleetctl submit $@; done
 }
+function start-fleet-unit() {
+    sudo fleetctl start $@
+    while [ $? != 0 ]; do sleep 1; sudo fleetctl start $@; done
+}
 # FLEET UNITS SPECIFIC TO THIS NODE
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}|grep -e '.service$')
 do
     submit-fleet-unit ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}/${unit}
-    sudo fleetctl start "${unit%.service}${COREOS_PRIVATE_IPV4}"
+    start-fleet-unit "${unit%.service}${COREOS_PRIVATE_IPV4}"
 done
 # GENERAL-PURPOSE UNITS
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet|grep -e '.service$\|.timer$')
 do
     submit-fleet-unit ${SCRIPTDIR}/$VERSION/fleet/${unit}
-    sudo fleetctl start ${SCRIPTDIR}/$VERSION/fleet/${unit}
+    start-fleet-unit ${SCRIPTDIR}/$VERSION/fleet/${unit}
 done
