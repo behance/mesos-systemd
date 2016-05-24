@@ -6,8 +6,8 @@ After=zk-health.service mesos-master@%i.service marathon@%i.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment="ETCD_AUTH="`echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'`:`echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//'`""
-Environment="IMAGE=etcdctl -u $ETCD_AUTH get /images/cfn-signal"
+Environment="ETCD_AUTH="`echo "-u"` `echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'`:`echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//'`""
+Environment="IMAGE=`etcdctl $ETCD_AUTH get /images/cfn-signal`"
 Environment="AZ=curl -sS http://169.254.169.254/latest/meta-data/placement/availability-zone"
 Type=simple
 User=core
