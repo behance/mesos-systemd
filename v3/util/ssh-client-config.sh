@@ -33,6 +33,7 @@ HOSTS=$(for ((i = 0; i < ${SUBNETS}; i++)); do echo ${NETWORK} | awk -v x="${i}"
 
 cat << EOF
 Host ${IP}
+  ForwardAgent yes
   IdentityFile ~/.ssh/ssh.pem
 
 Host ${HOSTS}
