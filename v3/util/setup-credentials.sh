@@ -15,7 +15,7 @@ if [[ "${NODE_ROLE}" = "worker" && ! -z "$CONTAINERS_ROLE" ]]; then
 fi
 
 TABLE=`sudo echo $SECRETS_TABLE`
-docker pull behance/docker-aws-secrets-downloader:latest
+docker pull index.docker.io/behance/docker-aws-secrets-downloader:latest
 
 # Create a dockercfg
 DOCKERCFG_CONTENTS=`sudo docker run --rm $IAM_ROLE_LABEL behance/docker-aws-secrets-downloader --table $TABLE --key secrets --name DOCKERCFG --format plain`
@@ -24,7 +24,10 @@ sudo chown -R ${OWNER}:${OWNER} /home/${OWNER}/.dockercfg
 sudo cp /home/${OWNER}/.dockercfg /root/.dockercfg
 
 # Actually generate a private key
-ssh-keygen -f ${HOMEDIR}/.ssh/id_rsa -t rsa -N ''
+if [[ ! -f ${HOMEDIR}/.ssh/id_rsa ]]; then
+	ssh-keygen -f ${HOMEDIR}/.ssh/id_rsa -t rsa -N ''
+fi
+
 # ensure that we have a public key for our RSA key and that it's authorized
 ssh-keygen -f ${HOMEDIR}/.ssh/id_rsa -y > ${HOMEDIR}/.ssh/id_rsa.pub
 cat ${HOMEDIR}/.ssh/id_rsa.pub >> ${HOMEDIR}/.ssh/authorized_keys

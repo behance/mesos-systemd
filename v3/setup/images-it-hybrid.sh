@@ -12,8 +12,8 @@ if [ "$(etcdctl get /bootstrap.service/images-it-hybrid-bootstrapped)" == "true"
 fi
 etcdctl set /bootstrap.service/images-it-hybrid-bootstrapped true
 
-etcdctl set /images/flight-director "behance/flight-director:latest"
-etcdctl set /images/capcom       	"behance/capcom:latest"
+etcdctl set /images/flight-director "index.docker.io/behance/flight-director:latest"
+etcdctl set /images/capcom       	"index.docker.io/behance/capcom:latest"
 
 
 docker pull $(etcdctl get /images/flight-director)

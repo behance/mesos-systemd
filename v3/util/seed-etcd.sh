@@ -1,7 +1,7 @@
 #!/usr/bin/bash -xe
 
 source /etc/environment
-docker pull behance/docker-aws-secrets-downloader:latest
+docker pull index.docker.io/behance/docker-aws-secrets-downloader:latest
 
 # On the worker tier, the containers need to be launched with a role
 # because of the IAM proxy metadata service.

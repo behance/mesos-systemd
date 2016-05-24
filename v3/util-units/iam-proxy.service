@@ -11,7 +11,7 @@ Restart=always
 RestartSec=20
 TimeoutStartSec=0
 
-ExecStartPre=/usr/bin/sh -c "docker pull behance/iam-docker:latest"
+ExecStartPre=/usr/bin/sh -c "docker pull index.docker.io/behance/iam-docker:latest"
 ExecStartPre=-/usr/bin/docker kill iam-proxy
 ExecStartPre=-/usr/bin/docker rm -f iam-proxy
 

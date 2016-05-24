@@ -9,7 +9,7 @@ After=network-online.target
 Type=oneshot
 EnvironmentFile=/etc/environment
 User=core
-ExecStartPre=/usr/bin/docker pull behance/ecr-login:latest
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/ecr-login:latest
 ExecStartPre=-/usr/bin/docker kill ecr-login
 ExecStartPre=-/usr/bin/docker rm -f ecr-login
 # ecr-login fetches ECR creds and formats them correctly for .dockercfg

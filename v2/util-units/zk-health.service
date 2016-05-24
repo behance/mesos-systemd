@@ -1,3 +1,4 @@
+
 [Unit]
 Description=Exhibitor/Zookeeper health checker
 
@@ -6,21 +7,11 @@ Description=Exhibitor/Zookeeper health checker
 Before=locksmithd.service
 
 [Service]
-Type=simple
+Type=oneshot
 User=core
-Restart=on-failure
+RemainAfterExit=yes
 
-# array of objects, each representing a ZK node
-Environment="EX_QUERY=curl -sS localhost:8181/exhibitor/v1/cluster/status"
-# expected size of ensemble after it's done
-Environment="CTL_SIZE=etcdctl get /environment/CONTROL_CLUSTER_SIZE"
-
-ExecStartPre=/usr/bin/bash -c 'while [ "$(systemctl is-active zk-exhibitor@*)" != "active" ]; do sleep 2; done'
-ExecStartPre=/usr/bin/sleep 16
-# code==3 means that the node is up and serving
-ExecStartPre=/usr/bin/bash -c 'while [ $($EX_QUERY|jq "[select(.[].code == 3)]|length") != $($CTL_SIZE) ]; do sleep 4; done'
-
-ExecStart=/usr/bin/sleep infinity
+ExecStart=/usr/bin/bash -x /home/core/mesos-systemd/v2/util/exhibitor-health-poll.sh
 
 [Install]
 WantedBy=multi-user.target

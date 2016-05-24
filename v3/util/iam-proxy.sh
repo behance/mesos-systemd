@@ -8,7 +8,7 @@ if [ "${NODE_ROLE}" != "worker" ]; then
     exit 0
 fi
 
-docker pull "behance/iam-docker:latest"
+docker pull "index.docker.io/behance/iam-docker:latest"
 
 export NETWORK="bridge"
 export GATEWAY="$(ifconfig docker0 | grep "inet " | awk -F: '{print $1}' | awk '{print $2}')"

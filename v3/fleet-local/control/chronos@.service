@@ -38,7 +38,7 @@ ExecStart=/usr/bin/sh -c "docker run \
   --http_port 4400 \
   --mesos_authentication_principal $($MESOS_USERNAME) \
   --mesos_authentication_secret_file /opt/mesos/framework-secret \
-  --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$(ZK_ENDPOINT)/mesos \
+  --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/mesos \
   --mesos_framework_name chronos-$(hostname) \
   --zk_hosts ${ZOOKEEPER_HOST}"
 
