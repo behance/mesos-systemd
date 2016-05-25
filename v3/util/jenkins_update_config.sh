@@ -31,6 +31,9 @@ if [[ -n $CONTROL_JENKINS_OKTA_METADATA ]] ; then
   # replace the config file
   cp -f /var/tmp/config.xml $JENKINS_DIRECTORY/config.xml
 
+  # remove temporary file
+  rm -f /var/tmp/config.xml
+
   echo "Control Jenkins: Updated Okta configuration"
 else
   echo "Control Jenkins: Using insecure configuration"
