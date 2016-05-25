@@ -6,7 +6,7 @@ After=zk-health.service mesos-master@%i.service marathon@%i.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment="IMAGE=`etcdctl get /images/cfn-signal`"
+Environment="IMAGE=etcdctl get /images/cfn-signal"
 Environment="AZ=curl -sS http://169.254.169.254/latest/meta-data/placement/availability-zone"
 Type=simple
 User=core
