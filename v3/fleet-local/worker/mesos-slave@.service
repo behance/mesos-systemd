@@ -4,11 +4,10 @@ After=docker.service bootstrap.service
 Requires=docker.service bootstrap.service
 
 [Service]
-Environment=ETCD_AUTH="`echo "-u"` `echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'`:`echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//'`"
-Environment="IMAGE=etcdctl $ETCD_AUTH get /images/mesos-slave"
-Environment="ZK_USERNAME=etcdctl $ETCD_AUTH get /zookeeper/config/username"
-Environment="ZK_PASSWORD=etcdctl $ETCD_AUTH get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl $ETCD_AUTH get /zookeeper/config/endpoint"
+Environment="IMAGE=etcdctl get /images/mesos-slave"
+Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
+Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
+Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
 EnvironmentFile=/etc/environment
 
 User=core
