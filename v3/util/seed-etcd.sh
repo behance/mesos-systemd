@@ -1,9 +1,17 @@
 #!/usr/bin/bash -xe
 
 source /etc/environment
-docker pull behance/docker-aws-secrets-downloader:latest
+docker pull index.docker.io/behance/docker-aws-secrets-downloader:latest
 
-DL_TABLE="sudo docker run behance/docker-aws-secrets-downloader --table $SECRETS_TABLE"
+# On the worker tier, the containers need to be launched with a role
+# because of the IAM proxy metadata service.
+IAM_ROLE_LABEL=""
+
+if [[ "${NODE_ROLE}" = "worker" && ! -z "$CONTAINERS_ROLE" ]]; then
+    IAM_ROLE_LABEL=' --label com.swipely.iam-docker.iam-profile='"$CONTAINERS_ROLE"' '    
+fi
+
+DL_TABLE="sudo docker run --rm $IAM_ROLE_LABEL behance/docker-aws-secrets-downloader --table $SECRETS_TABLE"
 # Get all available secrets and configs
 AV_SECRETS=$($DL_TABLE --key secrets)
 AV_CONFIGS=$($DL_TABLE --key configs)

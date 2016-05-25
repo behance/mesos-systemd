@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # NOTE: this needs to be run with sudo privileges
 # $1 must be the SCRIPTDIR
@@ -25,7 +25,7 @@ cp "${SCRIPTDIR}/v3/util-units/etcd-peers.service" /etc/systemd/system/
 systemctl start etcd-peers
 
 echo "-------Waiting for etcd2 to start-------"
-until etcdctl cluster-health
+while etcdctl cluster-health|grep unhealthy
 do
   sleep 8
 done

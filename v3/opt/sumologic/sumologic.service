@@ -4,11 +4,12 @@ After=docker.service bootstrap.service
 
 [Service]
 EnvironmentFile=/etc/environment
+Environment="IP=curl -sS http://169.254.169.254/latest/meta-data/local-ipv4"
 User=core
 Restart=always
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-sumologic
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/docker-sumologic
 ExecStartPre=-/usr/bin/docker kill sumologic
 ExecStartPre=-/usr/bin/docker rm -f sumologic
 ExecStart=/usr/bin/bash -c \
@@ -19,8 +20,9 @@ ExecStart=/usr/bin/bash -c \
     -e SUMO_NAME=docker_cluster \
     -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/container-logs \
     -e SUMO_COLLECTOR_NAME=mesos_app_collector \
-    -e SUMO_ACCESS_ID=`etcdctl get /sumologic_id` \
-    -e SUMO_ACCESS_KEY=`etcdctl get /sumologic_secret` \
+    -e SUMO_HOSTNAME=$($IP) \
+    -e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
+    -e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
     behance/docker-sumologic"
 ExecStop=/usr/bin/docker stop sumologic
 

@@ -10,7 +10,7 @@ Restart=always
 TimeoutStartSec=0
 RestartSec=10
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent:latest
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/docker-dd-agent:latest
 ExecStartPre=-/usr/bin/docker kill dd-agent
 ExecStartPre=-/usr/bin/docker rm -f dd-agent
 ExecStart=/usr/bin/bash -c \
@@ -18,7 +18,7 @@ ExecStart=/usr/bin/bash -c \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /proc/:/host/proc/:ro \
 -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
--e API_KEY=`etcdctl get /ddapikey` \
+-e API_KEY=`etcdctl get /datadog/config/api-key` \
 behance/docker-dd-agent"
 ExecStop=/usr/bin/docker stop dd-agent
 

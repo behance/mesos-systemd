@@ -7,19 +7,21 @@ After=network-online.target
 
 [Service]
 Type=oneshot
+EnvironmentFile=/etc/environment
 User=core
-ExecStartPre=/usr/bin/docker pull behance/ecr-login:latest
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/ecr-login:latest
 ExecStartPre=-/usr/bin/docker kill ecr-login
 ExecStartPre=-/usr/bin/docker rm -f ecr-login
 # ecr-login fetches ECR creds and formats them correctly for .dockercfg
 ExecStart=/bin/bash -c \
     'source /etc/profile.d/etcdctl.sh && \
-    if [[ -n `etcdctl get /ECR/registry-account` ]]; then \
+    if [[ -n `etcdctl get /ECR/config/registry-account` ]]; then \
     docker run \
+    --label com.swipely.iam-docker.iam-profile="$CONTAINERS_ROLE" \
     --name ecr-login \
     -e "TEMPLATE=templates/dockercfg.tmpl" \
-    -e "AWS_REGION=`etcdctl get /ECR/region`" \
-    -e "REGISTRIES=`etcdctl get /ECR/registry-account`" \
+    -e "AWS_REGION=`etcdctl get /ECR/config/region`" \
+    -e "REGISTRIES=`etcdctl get /ECR/config/registry-account`" \
     behance/ecr-login >/home/core/.dockercfg; \
     fi'
 ExecStop=/usr/bin/docker stop ecr-login

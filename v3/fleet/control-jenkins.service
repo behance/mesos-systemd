@@ -27,7 +27,7 @@ ExecStart=/usr/bin/bash -c \
   --env-file=/etc/environment \
   -p 8081:8080 \
   -u root \
-  jenkins'
+  jenkins:1.651.1'
 ExecStop=/usr/bin/docker stop jenkins
 
 [Install]

@@ -20,6 +20,12 @@ if [ "$NODE_ROLE" = "it-hybrid" ]; then
   sudo ${SCRIPTDIR}/itv1/util/etcd2-setup.sh $SCRIPTDIR
 fi
 
+# Worker tier - must run the IAM proxy setup before any other containers
+# Version v2 of util scripts does not have this file
+if [[ "$NODE_ROLE" = "worker" && -f ${SCRIPTDIR}/$VERSION/util/iam-proxy.sh ]]; then
+  sudo ${SCRIPTDIR}/$VERSION/util/iam-proxy.sh $SCRIPTDIR
+fi
+
 # run appropriate setup-credentials script
 # must happen after etcd2 peers so that etcdctl can actually be used
 ${SCRIPTDIR}/$VERSION/util/setup-credentials.sh || :
@@ -39,24 +45,59 @@ done
 # This must be after setup scripts are run so that defaults don't overwrite
 # custom-provided etcd vals
 ${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
+
+# The mesos-credentials.sh script must run after seed-etcd.sh
+sudo ${SCRIPTDIR}/$VERSION/util/mesos-credentials.sh || :
+
 etcdctl get /environment/SCRIPTS-FORK
 if [[ $? = 4 ]]; then
   # 4 == 404 - key not found
   # case where a node is joining a pre-existing cluster
-  SCRIPTS_REV=$(cd $SCRIPTDIR && git branch|grep '\*'|cut -d' ' -f2 && cd -)
+  SCRIPTS_REV=$(cd $SCRIPTDIR && git rev-parse HEAD)
   etcdctl set /environment/SCRIPTS-FORK adobe-platform
-  etcdctl set /environment/SCRIPTS-REV  $SCRIPTS_REV
+  etcdctl set /environment/SCRIPTS-SHA  $SCRIPTS_REV
 fi
 
+# CURRENT_REV=$(cd $SCRIPTDIR && git rev-parse HEAD)
+# CLUSTER_REV=$(etcdctl get /environment/SCRIPTS-SHA)
+# if [[ "$CLUSTER_REV" != "$CURRENT_REV" ]]; then
+#   cd $SCRIPTDIR && git reset --hard && git checkout $CLUSTER_REV
+#   $SCRIPTDIR/init $1
+#   exit 0
+# fi
+
+# start services specified in $(etcdctl get /environment/services)
+# mapped to the /opt directory of these scripts
+etcdctl get /environment/services
+if [[ $? = 4 ]]; then
+  etcdctl set /environment/services "sumologic datadog"
+fi
+for service in $(etcdctl get /environment/services)
+do
+    servicedir=${SCRIPTDIR}/${VERSION}/opt/${service}
+    if [[ ! -d $servicedir ]]; then
+        continue
+    fi
+    for unit in $(ls $servicedir|grep -e '.service$\|.timer$')
+    do
+        sudo fleetctl submit $servicedir/$unit
+        sudo fleetctl start $unit
+    done
+done
+
+function submit-fleet-unit() {
+    sudo fleetctl submit $@
+    while [ $? != 0 ]; do sleep 1; sudo fleetctl submit $@; done
+}
 # FLEET UNITS SPECIFIC TO THIS NODE
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}|grep -e '.service$')
 do
-    sudo fleetctl submit "${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}/${unit}"
+    submit-fleet-unit ${SCRIPTDIR}/$VERSION/fleet-local/${NODE_ROLE}/${unit}
     sudo fleetctl start "${unit%.service}${COREOS_PRIVATE_IPV4}"
 done
 # GENERAL-PURPOSE UNITS
 for unit in $(ls ${SCRIPTDIR}/$VERSION/fleet|grep -e '.service$\|.timer$')
 do
-    sudo fleetctl submit ${SCRIPTDIR}/$VERSION/fleet/${unit}
+    submit-fleet-unit ${SCRIPTDIR}/$VERSION/fleet/${unit}
     sudo fleetctl start ${SCRIPTDIR}/$VERSION/fleet/${unit}
 done

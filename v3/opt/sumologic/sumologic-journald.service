@@ -6,11 +6,12 @@ After=docker.service bootstrap.service
 
 [Service]
 EnvironmentFile=/etc/environment
+Environment="IP=curl -sS http://169.254.169.254/latest/meta-data/local-ipv4"
 User=core
 Restart=always
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-sumologic:syslog-latest
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/docker-sumologic:syslog-latest
 ExecStartPre=-/usr/bin/docker kill sumologic-journald
 ExecStartPre=-/usr/bin/docker rm -f sumologic-journald
 ExecStart=/usr/bin/bash -c \
@@ -23,8 +24,9 @@ sudo /usr/bin/docker run --name sumologic-journald \
 -e SUMO_NAME=${NODE_PRODUCT}-${NODE_TIER}-cluster \
 -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/${NODE_ROLE}/journald-logs \
 -e SUMO_COLLECTOR_NAME=mesos_journald_collector \
--e SUMO_ACCESS_ID=`etcdctl get /sumologic_id` \
--e SUMO_ACCESS_KEY=`etcdctl get /sumologic_secret` \
+-e SUMO_HOSTNAME=$($IP) \
+-e SUMO_ACCESS_ID=`etcdctl get /sumologic/config/access-id` \
+-e SUMO_ACCESS_KEY=`etcdctl get /sumologic/config/access-key` \
 behance/docker-sumologic:syslog-latest"
 ExecStop=/usr/bin/docker stop sumologic-journald
 

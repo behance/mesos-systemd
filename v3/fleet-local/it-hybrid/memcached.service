@@ -10,7 +10,7 @@ Restart=always
 RestartSec=5
 TimeoutStartSec=0
 
-ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull borja/docker-memcached"
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull index.docker.io/borja/docker-memcached"
 ExecStartPre=-/usr/bin/docker kill memcached
 ExecStartPre=-/usr/bin/docker rm memcached
 

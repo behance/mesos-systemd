@@ -11,14 +11,14 @@ After=docker.service
 User=core
 Restart=always
 TimeoutStartSec=0
-ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent-mesos:latest
+ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent-mesos:v2
 ExecStartPre=-/usr/bin/docker kill dd-agent-mesos
 ExecStartPre=-/usr/bin/docker rm -f dd-agent-mesos
 ExecStart=/usr/bin/bash -c \
 "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && sudo /usr/bin/docker run --name dd-agent-mesos -h `hostname` \
 -e API_KEY=`etcdctl get /ddapikey` \
 -e MESOS_HOST=`etcdctl get /environment/CONTROL_ELB` \
-behance/docker-dd-agent-mesos"
+behance/docker-dd-agent-mesos:v2"
 ExecStop=/usr/bin/docker stop dd-agent-mesos
 
 [X-Fleet]

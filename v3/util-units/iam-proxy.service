@@ -1,0 +1,32 @@
+[Unit]
+Description=IAMProxy
+After=docker.service
+Requires=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+
+User=core
+Restart=always
+RestartSec=20
+TimeoutStartSec=0
+
+ExecStartPre=/usr/bin/sh -c "docker pull index.docker.io/behance/iam-docker:latest"
+ExecStartPre=-/usr/bin/docker kill iam-proxy
+ExecStartPre=-/usr/bin/docker rm -f iam-proxy
+
+ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+  --name=iam-proxy \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
+  --restart=always \
+  --net=host \
+  behance/iam-docker:latest"
+
+ExecStop=-/usr/bin/docker stop iam-proxy
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+MachineMetadata=role=worker

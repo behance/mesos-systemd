@@ -10,15 +10,15 @@ Restart=always
 RestartSec=10
 TimeoutStartSec=0
 ExecStartPre=/usr/bin/systemctl is-active bootstrap
-ExecStartPre=/usr/bin/docker pull behance/docker-dd-agent-proxy:latest
+ExecStartPre=/usr/bin/docker pull index.docker.io/behance/docker-dd-agent-proxy:latest
 ExecStartPre=-/usr/bin/docker kill dd-agent-proxy
 ExecStartPre=-/usr/bin/docker rm -f dd-agent-proxy
 ExecStart=/usr/bin/bash -c \
 "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && \
 sudo /usr/bin/docker run --name dd-agent-proxy \
 --net='host' \
--e API_KEY=`etcdctl get /ddapikey` \
--e PROXY=`etcdctl get /CP/CP_PROXY` \
+-e API_KEY=`etcdctl get /datadog/config/api-key` \
+-e PROXY=`etcdctl get /capcom/config/proxy` \
 behance/docker-dd-agent-proxy"
 ExecStop=/usr/bin/docker stop dd-agent-proxy
 
