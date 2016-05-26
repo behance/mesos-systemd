@@ -4,10 +4,10 @@ After=docker.service bootstrap.service
 Requires=docker.service bootstrap.service
 
 [Service]
-Environment="IMAGE=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /images/mesos-slave"
-Environment="ZK_USERNAME=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/username"
-Environment="ZK_PASSWORD=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/endpoint"
+Environment="IMAGE=`etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /images/mesos-slave`"
+Environment="ZK_USERNAME=`etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/username`"
+Environment="ZK_PASSWORD=`etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/password`"
+Environment="ZK_ENDPOINT=`etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/endpoint`"
 EnvironmentFile=/etc/environment
 
 User=core
