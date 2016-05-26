@@ -28,6 +28,12 @@ sudo cat << EOF > $CRED_DIR/${1}.json
   "password": "$2"
 }
 EOF
+sudo cat << EOF > $CRED_DIR/${1}
+$1
+EOF
+sudo cat << EOF > $CRED_DIR/${1}-password
+$2
+EOF
 }
 
 add_users $ROOT_USERNAME $ROOT_PASSWORD

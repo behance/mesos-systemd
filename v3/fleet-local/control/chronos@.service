@@ -7,11 +7,12 @@ Requires=docker.service
 [Service]
 # NOTE: chronos doesn't need the `zk://`
 Environment=ZOOKEEPER_HOST=localhost:2181
-Environment="IMAGE=etcdctl -u $(echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'):$(echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//') get /images/chronos"
-Environment="ZK_USERNAME=etcdctl $(echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'):$(echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//') get /zookeeper/config/username"
-Environment="ZK_PASSWORD=etcdctl $(echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'):$(echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//') get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl $(echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'):$(echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//') get /zookeeper/config/endpoint"
-Environment="MESOS_USERNAME=etcdctl $(echo "$(cat /opt/etcdctl/write-user.json |jq '.user')" | sed -e 's/^"//'  -e 's/"$//'):$(echo "$(cat /opt/etcdctl/write-user.json |jq '.password')" | sed -e 's/^"//'  -e 's/"$//') get /mesos/config/username"
+Environment=ETCD_AUTH="-u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password)"
+Environment="IMAGE=etcdctl $ETCD_AUTH get /images/chronos"
+Environment="ZK_USERNAME=etcdctl $ETCD_AUTH  get /zookeeper/config/username"
+Environment="ZK_PASSWORD=etcdctl $ETCD_AUTH  get /zookeeper/config/password"
+Environment="ZK_ENDPOINT=etcdctl $ETCD_AUTH  get /zookeeper/config/endpoint"
+Environment="MESOS_USERNAME=etcdctl $ETCD_AUTH  get /mesos/config/username"
 
 User=core
 Restart=always
