@@ -20,7 +20,7 @@ ExecStartPre=/usr/bin/systemctl is-active update-os.service
 # ExecStart from spinning up and mounting / creating .dockercfg/ as a dir
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /home/core/.dockercfg ]; then exit 1; fi"
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /opt/mesos/credentials ]; then exit 1; fi"
-ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $($IMAGE)"
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $IMAGE"
 ExecStartPre=-/usr/bin/docker kill mesos-slave
 ExecStartPre=-/usr/bin/docker rm mesos-slave
 
