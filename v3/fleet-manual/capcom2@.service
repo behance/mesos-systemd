@@ -17,6 +17,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   docker run \
     --name capcom2 \
     --net='host' \
+    --read-only \
     --privileged \
     -e LOG_APP_NAME=capcom \
     -e CP_APPLICATIONS=$(etcdctl get /capcom/config/applications) \

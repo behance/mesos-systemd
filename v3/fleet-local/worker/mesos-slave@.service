@@ -29,6 +29,7 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
     --name=mesos-slave \
     --net=host \
     --pid=host \
+    --read-only \
     --privileged \
     -v /home/core/.dockercfg:/root/.dockercfg:ro \
     -v /sys:/sys \

@@ -11,7 +11,7 @@ RestartSec=20
 TimeoutStartSec=0
 EnvironmentFile=/etc/environment
 Environment="IMAGE=etcdctl get /images/capcom"
-Environment="PROXY=etcdctl get /capcom/config/proxy"  
+Environment="PROXY=etcdctl get /capcom/config/proxy"
 
 ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $($IMAGE)"
 ExecStartPre=-/usr/bin/docker kill capcom
@@ -22,6 +22,7 @@ ExecStart=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && \
   docker run \
     --name capcom \
     --net='host' \
+    --read-only \
     --privileged \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     -v /var/run/docker.sock:/var/run/docker.sock \
