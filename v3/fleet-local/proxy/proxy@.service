@@ -9,8 +9,8 @@ User=core
 Restart=always
 RestartSec=5
 TimeoutStartSec=0
-Environment="IMAGE=etcdctl get /images/proxy"  
-Environment="PROXY=etcdctl get /capcom/config/proxy"  
+Environment="IMAGE=etcdctl get /images/proxy"
+Environment="PROXY=etcdctl get /capcom/config/proxy"
 Environment="CMD=etcdctl get /capcom/config/proxy-docker-command"
 
 ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $($IMAGE)"
@@ -22,6 +22,7 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
   echo $($CMD) | xargs docker run \
     --name proxy \
     --net='host' \
+    --read-only \
     -m $(($(grep MemTotal /proc/meminfo | awk '{print $2}')*3/4/1024))M \
     -v /etc/$($PROXY):/etc/$($PROXY) \
     $($IMAGE)"

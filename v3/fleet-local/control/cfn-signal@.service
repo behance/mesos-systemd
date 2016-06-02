@@ -18,6 +18,7 @@ ExecStartPre=/usr/bin/systemctl is-active marathon@*
 ExecStartPre=/usr/bin/sh -c "docker pull $($IMAGE)"
 ExecStartPre=/usr/bin/sh -c "/usr/bin/docker run --rm\
  $($IMAGE) cfn-signal\
+ --read-only \
  --stack $STACK_NAME\
  --region $($AZ|head -c-1)\
  --resource $CONTROL_ASG_NAME\
