@@ -28,6 +28,12 @@ sudo cat << EOF > $CRED_DIR/${1}.json
   "password": "$2"
 }
 EOF
+sudo cat << EOF > $CRED_DIR/${1}
+$1
+EOF
+sudo cat << EOF > $CRED_DIR/${1}-password
+$2
+EOF
 }
 
 add_users $ROOT_USERNAME $ROOT_PASSWORD
@@ -62,4 +68,4 @@ curl -L http://127.0.0.1:2379/v2/auth/users/${WRITE_USERNAME} -XPUT -d "@$CRED_D
 # Enable authentication
 etcdctl auth enable
 
-sudo rm -rf $CRED_DIR
+sudo rm -rf $CRED_DIR/read-user.json $CRED_DIR/root.json

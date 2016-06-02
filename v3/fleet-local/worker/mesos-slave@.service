@@ -4,10 +4,10 @@ After=docker.service bootstrap.service
 Requires=docker.service bootstrap.service
 
 [Service]
-Environment="IMAGE=etcdctl get /images/mesos-slave"
-Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
-Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
+Environment="IMAGE=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /images/mesos-slave"
+Environment="ZK_USERNAME=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/username"
+Environment="ZK_PASSWORD=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/password"
+Environment="ZK_ENDPOINT=etcdctl -u $(cat /opt/etcdctl/root):$(cat /opt/etcdctl/root-password) get /zookeeper/config/endpoint"
 EnvironmentFile=/etc/environment
 
 User=core
@@ -20,7 +20,7 @@ ExecStartPre=/usr/bin/systemctl is-active update-os.service
 # ExecStart from spinning up and mounting / creating .dockercfg/ as a dir
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /home/core/.dockercfg ]; then exit 1; fi"
 ExecStartPre=/usr/bin/bash -c "if [ ! -f /opt/mesos/credentials ]; then exit 1; fi"
-ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $($IMAGE)"
+ExecStartPre=/usr/bin/sh -c "source /etc/profile.d/etcdctl.sh && docker pull $IMAGE"
 ExecStartPre=-/usr/bin/docker kill mesos-slave
 ExecStartPre=-/usr/bin/docker rm mesos-slave
 
@@ -40,7 +40,7 @@ ExecStart=/usr/bin/bash -c "source /etc/profile.d/etcdctl.sh && \
     -v /lib64/libgcrypt.so:/lib/libgcrypt.so.20:ro \
     -v /var/lib/mesos/slave:/var/lib/mesos/slave \
     -v /opt/mesos/credentials:/opt/mesos/credentials:ro \
-    $($IMAGE) \
+    $IMAGE \
     --ip=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) \
     --attributes=zone:$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\;os:coreos\;worker_group:$WORKER_GROUP \
     --containerizers=docker,mesos \
