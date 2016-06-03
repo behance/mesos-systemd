@@ -16,6 +16,7 @@ ExecStart=/usr/bin/bash -c \
     "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && \
     sudo /usr/bin/docker run --name sumologic-control \
     --hostname=$COREOS_PRIVATE_IPV4 \
+    --read-only \
     -v /var/lib/docker/containers/:/tmp/clogs/:ro \
     -e SUMO_NAME=docker_cluster \
     -e SUMO_CATEGORY=be/${NODE_PRODUCT}/${NODE_TIER}/control-logs \

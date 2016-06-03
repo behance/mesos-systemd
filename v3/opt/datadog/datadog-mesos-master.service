@@ -16,6 +16,7 @@ ExecStartPre=-/usr/bin/docker kill dd-agent-mesos-master
 ExecStartPre=-/usr/bin/docker rm -f dd-agent-mesos-master
 ExecStart=/usr/bin/bash -c \
 "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && sudo /usr/bin/docker run --name dd-agent-mesos-master -h `hostname` \
+--read-only \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /proc/:/host/proc/:ro \
 -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \

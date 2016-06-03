@@ -18,6 +18,7 @@ ExecStart=/usr/bin/bash -c \
 "if [[ -f /etc/profile.d/etcdctl.sh ]]; then source /etc/profile.d/etcdctl.sh;fi && \
 sudo /usr/bin/docker run --name sumologic-journald \
 --hostname=$COREOS_PRIVATE_IPV4 \
+--read-only \
 -p 514:514 \
 -p 514:514/udp \
 -e PATH_EXPRESSION=/syslog/syslog \
