@@ -10,7 +10,6 @@ Environment=ZOOKEEPER_HOST=localhost:2181
 Environment="IMAGE=etcdctl get /images/chronos"
 Environment="ZK_USERNAME=etcdctl get /zookeeper/config/username"
 Environment="ZK_PASSWORD=etcdctl get /zookeeper/config/password"
-Environment="ZK_ENDPOINT=etcdctl get /zookeeper/config/endpoint"
 Environment="MESOS_USERNAME=etcdctl get /mesos/config/username"
 
 User=core
@@ -41,7 +40,7 @@ ExecStart=/usr/bin/sh -c "docker run \
   --http_port 4400 \
   --mesos_authentication_principal $($MESOS_USERNAME) \
   --mesos_authentication_secret_file /opt/mesos/framework-secret \
-  --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$($ZK_ENDPOINT)/mesos \
+  --master zk://$($ZK_USERNAME):$($ZK_PASSWORD)@$ZOOKEEPER_HOST/mesos \
   --mesos_framework_name chronos-$(hostname) \
   --zk_hosts ${ZOOKEEPER_HOST}"
 
