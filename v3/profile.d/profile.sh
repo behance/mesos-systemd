@@ -9,5 +9,5 @@ fi
 # set the prompt for non-root users
 if [[ ${EUID} != 0 ]]; then
   source /etc/environment
-  export PS1="\[\\033[01;32m\]\u@\h\[\\033[01;34m\] \[\\033[01;30m\]$NODE_TIER-$NODE_PRODUCT-$ZONE-$NODE_ROLE \[\\033[01;34m\]\w \$\[\\033[00m\] "
+  export PS1="\[\\033[01;32m\]$(who -m | awk '{print $1}')@\h\[\\033[01;34m\] \[\\033[01;30m\]$NODE_TIER-$NODE_PRODUCT-$ZONE-$NODE_ROLE \[\\033[01;34m\]\w \$\[\\033[00m\] "
 fi

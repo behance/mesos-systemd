@@ -14,8 +14,8 @@ else
   VERSION="$1"
 fi
 
-# Control tier - must form an etcd2 cluster first
-if [ "$NODE_ROLE" = "control" ]; then
+# Control and Bastion tiers - must form an etcd2 cluster first
+if [ "$NODE_ROLE" = "control" ] || [ "$NODE_ROLE" = "bastion" ]; then
   sudo ${SCRIPTDIR}/$VERSION/util/etcd2-setup.sh $SCRIPTDIR
 fi
 if [ "$NODE_ROLE" = "it-hybrid" ]; then
@@ -62,6 +62,9 @@ ${SCRIPTDIR}/$VERSION/util/seed-etcd.sh || :
 
 # The mesos-credentials.sh script must run after seed-etcd.sh
 sudo ${SCRIPTDIR}/$VERSION/util/mesos-credentials.sh || :
+
+# The klam-ssh.sh script must run after seed-etcd.sh
+sudo ${SCRIPTDIR}/$VERSION/util/klam-ssh.sh || :
 
 etcdctl get /environment/SCRIPTS-FORK
 if [[ $? = 4 ]]; then
